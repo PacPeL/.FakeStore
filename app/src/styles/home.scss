@@ -410,14 +410,13 @@ background: linear-gradient(180deg, #ffffff 0%, #e8e8e8 100%);
 
 
 /* ===== SEARCH HEADER ===== */
-/* ===== SEARCH HEADER ===== */
 .searchHeader {
   position: fixed;
   top: -350px; /* cuánto se oculta arriba */
   left: 0;
   width: 100%;
   background: #fff;
-  padding: 40px 30px; /* padding vertical: aumenta la altura interna */
+  padding: 60px 30px; /* padding vertical: aumenta la altura interna */
   z-index: 1000;
   transition: top 0.3s ease;
   display: flex;

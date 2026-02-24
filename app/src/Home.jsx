@@ -18,22 +18,32 @@ export default function Home() {
   const [q, setQ] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
 
-// atajo de teclado Ctrl+K
-useEffect(() => {
-  const handleShortcut = (e) => {
-    if (e.ctrlKey && e.key.toLowerCase() === "k") {
-      e.preventDefault();
-      setSearchOpen(true); // abre la barra
-    }
-    if (e.key === "Escape") {
-      setSearchOpen(false); // cierra con Escape
-    }
-  };
+  // atajo de teclado Ctrl+K y Escape
+  useEffect(() => {
+    const handleShortcut = (e) => {
+      if (e.ctrlKey && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+      if (e.key === "Escape") {
+        setSearchOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleShortcut);
+    return () => window.removeEventListener("keydown", handleShortcut);
+  }, []);
 
-  window.addEventListener("keydown", handleShortcut);
-  return () => window.removeEventListener("keydown", handleShortcut);
-}, []);
-
+  // cerrar al clickar fuera (pero no dentro del header ni del drawer)
+  useEffect(() => {
+    if (!searchOpen) return;
+    const handleClickOutside = (e) => {
+      if (e.target.closest(".searchHeader")) return; // dentro del header
+      if (e.target.closest(".drawer")) return;       // dentro del drawer
+      setSearchOpen(false);
+    };
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, [searchOpen]);
 
   useEffect(() => {
     (async () => {
