@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState, useRef } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { api } from "./services/api";
 import "./styles/home.scss";
 
@@ -18,13 +18,13 @@ export default function Home() {
   const [q, setQ] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
 
-  // referencia al input
   const searchInputRef = useRef(null);
+  const navigate = useNavigate();
 
   // atajo de teclado Ctrl+K y Escape
   useEffect(() => {
     const handleShortcut = (e) => {
-      if (e.ctrlKey && e.key.toLowerCase() === "k") {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
         setSearchOpen(true);
       }
@@ -40,8 +40,9 @@ export default function Home() {
   useEffect(() => {
     if (!searchOpen) return;
     const handleClickOutside = (e) => {
-      if (e.target.closest(".searchHeader")) return; // dentro del header
-      if (e.target.closest(".drawer")) return;       // dentro del drawer
+      // si el click fue dentro del header o dentro del drawer, no cerrar
+      if (e.target.closest(".searchHeader")) return;
+      if (e.target.closest(".drawer")) return;
       setSearchOpen(false);
     };
     document.addEventListener("click", handleClickOutside);
@@ -51,7 +52,12 @@ export default function Home() {
   // enfocar input cuando se abre el header
   useEffect(() => {
     if (searchOpen && searchInputRef.current) {
-      searchInputRef.current.focus();
+      // pequeño delay para asegurar que la animación terminó y el input está visible
+      setTimeout(() => {
+        searchInputRef.current.focus();
+        // opcional: seleccionar texto si ya hay query
+        if (searchInputRef.current.select) searchInputRef.current.select();
+      }, 80);
     }
   }, [searchOpen]);
 
@@ -85,6 +91,39 @@ export default function Home() {
     setSearchOpen((prev) => !prev);
   };
 
+  // navegar al catálogo con el query (cierra header)
+  const goToCatalog = (query) => {
+    const qParam = query ?? "";
+    // navegar con query param
+    navigate(`/catalog?q=${encodeURIComponent(qParam)}`);
+    setSearchOpen(false);
+  };
+
+  // manejar Enter en el input
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      goToCatalog(q);
+    }
+  };
+
+  // manejar click en tag: rellena input y navega automáticamente
+  const handleTagClick = (tag) => {
+    setQ(tag);
+    // pequeña espera para que el estado se actualice (no estrictamente necesario)
+    setTimeout(() => goToCatalog(tag), 0);
+  };
+
+  // lista de tags (puedes extraer a un archivo o API más adelante)
+  const recentTags = [
+    "Chuteira Adulto",
+    "Chuteira Infantil",
+    "Meião GMA",
+    "Luva Goleiro",
+    "Calça Térmica GMA",
+    "Feminino",
+    "Masculino",
+  ];
+
   return (
     <div className="home">
       {/* ===== SEARCH HEADER ===== */}
@@ -98,6 +137,8 @@ export default function Home() {
             placeholder="Buscar..."
             value={q}
             onChange={(e) => setQ(e.target.value)}
+            onKeyDown={handleKeyDown}
+            aria-label="Buscar productos"
           />
         </div>
 
@@ -106,13 +147,16 @@ export default function Home() {
         </div>
 
         <div className="searchHeader__tags">
-          <span className="tag">Chuteira Adulto</span>
-          <span className="tag">Chuteira Infantil</span>
-          <span className="tag">Meião GMA</span>
-          <span className="tag">Luva Goleiro</span>
-          <span className="tag">Calça Térmica GMA</span>
-          <span className="tag">Feminino</span>
-          <span className="tag">Masculino</span>
+          {recentTags.map((t) => (
+            <button
+              key={t}
+              type="button"
+              className="tag"
+              onClick={() => handleTagClick(t)}
+            >
+              {t}
+            </button>
+          ))}
         </div>
       </div>
 

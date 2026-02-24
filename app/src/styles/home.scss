@@ -482,6 +482,9 @@ background: linear-gradient(180deg, #ffffff 0%, #e8e8e8 100%);
 
 .tag {
   background: #e2e2e2;
+  border: none;            /* quita el borde negro por defecto */
+  outline: none;           /* quita outline visual por defecto */
+  box-shadow: none;        /* por si hay sombras que parezcan borde */
   border-radius: 20px;
   padding: 6px 14px;
   font-size: 15px;
@@ -489,9 +492,20 @@ background: linear-gradient(180deg, #ffffff 0%, #e8e8e8 100%);
   font-weight: 500;
   color: #000;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: background 0.2s ease, transform 0.08s ease;
+  -webkit-appearance: none; /* evita estilos por defecto en Safari */
+  appearance: none;
 }
 
 .tag:hover {
   background: #d0d0d0;
+}
+
+.tag:active {
+  transform: translateY(1px);
+}
+
+.tag:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0,0,0,0.06); /* opcional: foco sutil accesible */
 }
