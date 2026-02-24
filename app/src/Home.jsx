@@ -36,8 +36,6 @@ useEffect(() => {
 
 
   useEffect(() => {
-
-  
     (async () => {
       setLoading(true);
       const prods = await api.getProducts();
