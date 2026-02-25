@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { api } from "../services/api.js";
 import "../styles/catalog.scss";
 
-// Drawer icons (mismos assets que usas en Home/Product)
+// Drawer icons
 import drawerIcon from "../assets/drawer_icon.svg";
 import profileIcon from "../assets/iconamoon_profile-light.svg";
 import cartIcon from "../assets/lineicons_cart-1.svg";
@@ -20,7 +20,16 @@ export default function Catalog() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // recent tags (mismo set que en Home/Product)
+  // ===== FILTER / SORT (UI igual al Figma; funcional básico) =====
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [sortOpen, setSortOpen] = useState(false);
+  const [activeCategory, setActiveCategory] = useState("Todos");
+  const [sortBy, setSortBy] = useState("Relevância");
+
+  const filterRef = useRef(null);
+  const sortRef = useRef(null);
+
+  // recent tags
   const recentTags = [
     "Chuteira Adulto",
     "Chuteira Infantil",
@@ -40,14 +49,14 @@ export default function Catalog() {
       .finally(() => setLoading(false));
   }, []);
 
-  // Si la ruta tiene q en query, precargarlo en el input (útil al volver)
+  // precargar q desde query param
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const qParam = params.get("q") ?? "";
     setQ(qParam);
   }, [location.search]);
 
-  // atajo de teclado Ctrl/Cmd + K y Escape
+  // atajo Ctrl/Cmd + K y Escape
   useEffect(() => {
     const handleShortcut = (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
@@ -56,25 +65,36 @@ export default function Catalog() {
       }
       if (e.key === "Escape") {
         setSearchOpen(false);
+        setFilterOpen(false);
+        setSortOpen(false);
       }
     };
     window.addEventListener("keydown", handleShortcut);
     return () => window.removeEventListener("keydown", handleShortcut);
   }, []);
 
-  // cerrar al clickar fuera (pero no dentro del header ni del drawer)
+  // click outside: search header, drawer, dropdowns
   useEffect(() => {
-    if (!searchOpen) return;
     const handleClickOutside = (e) => {
-      if (e.target.closest(".searchHeader")) return; // dentro del header
-      if (e.target.closest(".drawer")) return; // dentro del drawer
-      setSearchOpen(false);
+      if (searchOpen) {
+        if (e.target.closest(".searchHeader")) return;
+        if (e.target.closest(".drawer")) return;
+        setSearchOpen(false);
+      }
+
+      if (filterOpen && filterRef.current && !filterRef.current.contains(e.target)) {
+        setFilterOpen(false);
+      }
+      if (sortOpen && sortRef.current && !sortRef.current.contains(e.target)) {
+        setSortOpen(false);
+      }
     };
+
     document.addEventListener("click", handleClickOutside);
     return () => document.removeEventListener("click", handleClickOutside);
-  }, [searchOpen]);
+  }, [searchOpen, filterOpen, sortOpen]);
 
-  // enfocar input cuando se abre el header
+  // enfocar input cuando se abre searchHeader
   useEffect(() => {
     if (searchOpen && searchInputRef.current) {
       setTimeout(() => {
@@ -84,30 +104,80 @@ export default function Catalog() {
     }
   }, [searchOpen]);
 
-  // navegar al catálogo con el query (cierra header)
+  const toggleSearch = () => setSearchOpen((prev) => !prev);
+
+  // navegar al catálogo con query param
   const goToCatalog = (query) => {
     const qParam = query ?? "";
     navigate(`/catalog?q=${encodeURIComponent(qParam)}`);
     setSearchOpen(false);
   };
 
-  // manejar Enter en el input
   const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      goToCatalog(q);
-    }
+    if (e.key === "Enter") goToCatalog(q);
   };
 
-  // manejar click en tag: rellena input y navega automáticamente
   const handleTagClick = (tag) => {
     setQ(tag);
-    // pequeña espera para que el estado se actualice (no estrictamente necesario)
     setTimeout(() => goToCatalog(tag), 0);
   };
 
-  const toggleSearch = () => {
-    setSearchOpen((prev) => !prev);
-  };
+  // categorías a partir del dataset
+  const categories = useMemo(() => {
+    const set = new Set(products.map((p) => p.category).filter(Boolean));
+    return ["Todos", ...Array.from(set)];
+  }, [products]);
+
+  // filtro + búsqueda
+  const filtered = useMemo(() => {
+    const qNorm = q.trim().toLowerCase();
+
+    let arr = products;
+
+    if (activeCategory !== "Todos") {
+      arr = arr.filter((p) => (p.category ?? "") === activeCategory);
+    }
+
+    if (qNorm) {
+      arr = arr.filter((p) => (p.title ?? "").toLowerCase().includes(qNorm));
+    }
+
+    return arr;
+  }, [products, q, activeCategory]);
+
+  // orden
+  const sorted = useMemo(() => {
+    const arr = [...filtered];
+    switch (sortBy) {
+      case "Menor preço":
+        arr.sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
+        break;
+      case "Maior preço":
+        arr.sort((a, b) => (b.price ?? 0) - (a.price ?? 0));
+        break;
+      case "A-Z":
+        arr.sort((a, b) => String(a.title ?? "").localeCompare(String(b.title ?? "")));
+        break;
+      case "Z-A":
+        arr.sort((a, b) => String(b.title ?? "").localeCompare(String(a.title ?? "")));
+        break;
+      default:
+        // Relevância: deja el orden del API
+        break;
+    }
+    return arr;
+  }, [filtered, sortBy]);
+
+  // para “Figma feeling”: primera fila va dentro del bloque 1080
+  const firstRow = sorted.slice(0, 4);
+  const rest = sorted.slice(4);
+
+  // filas de 4
+  const restRows = useMemo(() => {
+    const out = [];
+    for (let i = 0; i < rest.length; i += 4) out.push(rest.slice(i, i + 4));
+    return out;
+  }, [rest]);
 
   if (loading) {
     return <div className="catalog__loading">Carregando catálogo...</div>;
@@ -137,23 +207,19 @@ export default function Catalog() {
 
         <div className="searchHeader__tags">
           {recentTags.map((t) => (
-            <button
-              key={t}
-              type="button"
-              className="tag"
-              onClick={() => handleTagClick(t)}
-            >
+            <button key={t} type="button" className="tag" onClick={() => handleTagClick(t)}>
               {t}
             </button>
           ))}
         </div>
       </div>
 
-      {/* ===== TOP BAR / DRAWER (misma UX que Home/Product) ===== */}
-      <header className="catalog__top">
-        <div className="catalog__topInner">
-          <h1 className="catalog__title">Catálogo de Produtos</h1>
+      {/* ===== TOP (1080) ===== */}
+      <section className="catalogHero">
+        <div className="catalogHero__wrap">
+          <div className="catalogHero__brand">po</div>
 
+          {/* drawer igual al home */}
           <nav className="drawer" aria-label="Ações rápidas">
             <button className="drawer__btn" type="button" aria-label="Menu">
               <img src={drawerIcon} alt="" />
@@ -167,30 +233,122 @@ export default function Catalog() {
               <img src={cartIcon} alt="" />
             </Link>
 
-            <button
-              className="drawer__btn"
-              type="button"
-              aria-label="Buscar"
-              onClick={toggleSearch}
-            >
+            <button className="drawer__btn" type="button" aria-label="Buscar" onClick={toggleSearch}>
               <img src={searchIcon} alt="" />
             </button>
           </nav>
-        </div>
-      </header>
 
-      {/* ===== GRID ===== */}
-      <div className="catalog__grid">
-        {products.map((p) => (
-          <Link key={p.id} to={`/produto/${p.id}`} className="catalog__card">
-            <img className="catalog__img" src={p.image} alt={p.title} />
-            <div className="catalog__info">
-              <div className="catalog__name">{p.title}</div>
-              <div className="catalog__price">R$ {p.price.toFixed(2)}</div>
+          {/* texto centrado como Figma */}
+          <div className="catalogHero__results">
+            <div className="catalogHero__hint">
+              Você buscou por “{q?.trim() ? q.trim() : "—"}”
             </div>
-          </Link>
+            <div className="catalogHero__count">{sorted.length} Resultados</div>
+          </div>
+
+          {/* filtros/orden como Figma */}
+          <div className="catalogControls">
+            <div className="catalogControls__group" ref={filterRef}>
+              <button
+                type="button"
+                className={`catalogControls__btn ${filterOpen ? "isOpen" : ""}`}
+                onClick={() => {
+                  setFilterOpen((v) => !v);
+                  setSortOpen(false);
+                }}
+                aria-label="Filtrar por"
+              >
+                <span>Filtrar por</span>
+                <span className="catalogControls__chev" aria-hidden="true" />
+              </button>
+
+              {filterOpen && (
+                <div className="catalogControls__menu">
+                  {categories.map((c) => (
+                    <button
+                      key={c}
+                      type="button"
+                      className={`catalogControls__item ${activeCategory === c ? "isActive" : ""}`}
+                      onClick={() => {
+                        setActiveCategory(c);
+                        setFilterOpen(false);
+                      }}
+                    >
+                      {c}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="catalogControls__group" ref={sortRef}>
+              <button
+                type="button"
+                className={`catalogControls__btn ${sortOpen ? "isOpen" : ""}`}
+                onClick={() => {
+                  setSortOpen((v) => !v);
+                  setFilterOpen(false);
+                }}
+                aria-label="Ordenar por"
+              >
+                <span>Ordenar por</span>
+                <span className="catalogControls__chev" aria-hidden="true" />
+              </button>
+
+              {sortOpen && (
+                <div className="catalogControls__menu">
+                  {["Relevância", "Menor preço", "Maior preço", "A-Z", "Z-A"].map((s) => (
+                    <button
+                      key={s}
+                      type="button"
+                      className={`catalogControls__item ${sortBy === s ? "isActive" : ""}`}
+                      onClick={() => {
+                        setSortBy(s);
+                        setSortOpen(false);
+                      }}
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* primera fila dentro del bloque 1080 (top: 592 en CSS) */}
+          <div className="catalogHero__row">
+            {firstRow.map((p) => (
+              <Link key={p.id} to={`/produto/${p.id}`} className="card">
+                <img className="card__img" src={p.image} alt={p.title} loading="lazy" />
+                <div className="card__text">
+                  <div className="card__name">{p.title}</div>
+                  <div className="card__price">R$ {p.price.toFixed(2)}</div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ===== RESTO DEL CATÁLOGO ===== */}
+      <section className="catalogBody">
+        {restRows.map((row, idx) => (
+          <div className="catalogBody__row" key={idx}>
+            {row.map((p) => (
+              <Link key={p.id} to={`/produto/${p.id}`} className="card">
+                <img className="card__img" src={p.image} alt={p.title} loading="lazy" />
+                <div className="card__text">
+                  <div className="card__name">{p.title}</div>
+                  <div className="card__price">R$ {p.price.toFixed(2)}</div>
+                </div>
+              </Link>
+            ))}
+          </div>
         ))}
-      </div>
+      </section>
+
+      <footer className="footerbar" />
     </div>
   );
 }
+
