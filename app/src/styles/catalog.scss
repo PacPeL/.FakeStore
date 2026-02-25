@@ -13,7 +13,7 @@
   font-family: "Montserrat", system-ui, -apple-system, Segoe UI, Roboto, Arial;
 }
 
-/* ===== TOP 1080 (igual feeling al Figma) ===== */
+/* ===== TOP 1080 ===== */
 .catalogHero {
   width: 100%;
 }
@@ -39,7 +39,7 @@
   color: #000;
 }
 
-/* texto centrado (top: 219) */
+/* texto centrado */
 .catalogHero__results {
   position: absolute;
   left: 50%;
@@ -67,7 +67,7 @@
   text-align: center;
 }
 
-/* ===== CONTROLS (Filtrar/Ordenar) ===== */
+/* ===== CONTROLS ===== */
 .catalogControls {
   position: absolute;
   left: 169px;
@@ -97,18 +97,18 @@
   color: #000;
 }
 
-.catalogControls__chev {
-  width: 15px;
-  height: 9px;
-  display: inline-block;
-  background: #000;
-  clip-path: polygon(0 0, 100% 0, 50% 100%);
-  transform: rotate(90deg);
+/* NEW: arrow image (Vector.svg) */
+.catalogControls__arrow {
+  width: 15.38px;
+  height: 9.06px;
+  display: block;
+
+  transform: rotate(90deg); /* mismo “feeling” que tenías antes */
   transform-origin: center;
-  opacity: 0.95;
+  transition: transform 0.18s ease;
 }
 
-.catalogControls__btn.isOpen .catalogControls__chev {
+.catalogControls__arrow.isOpen {
   transform: rotate(-90deg);
 }
 
@@ -150,7 +150,7 @@
   background: #e8e8e8;
 }
 
-/* ===== 1RA FILA dentro del bloque 1080 (top: 592) ===== */
+/* ===== 1RA FILA dentro del bloque 1080 ===== */
 .catalogHero__row {
   position: absolute;
   left: 0;
@@ -165,7 +165,7 @@
   padding: 0 40px;
 }
 
-/* ===== RESTO (debajo) ===== */
+/* ===== RESTO ===== */
 .catalogBody {
   width: 100%;
   max-width: 1920px;
@@ -190,7 +190,7 @@
   padding: 0 40px;
 }
 
-/* ===== CARD (copiada del HOME para que sea idéntica) ===== */
+/* ===== CARD (igual HOME) ===== */
 .card {
   width: 316px;
   height: 480px;
@@ -250,14 +250,14 @@
   font-weight: 700;
 }
 
-/* ===== FOOTER BAR (igual) ===== */
+/* ===== FOOTER BAR ===== */
 .footerbar {
   width: 100%;
   height: 60px;
   background: #3d3d3d;
 }
 
-/* ===== DRAWER vertical (igual que Home) ===== */
+/* ===== DRAWER vertical ===== */
 .drawer {
   position: absolute;
   right: 60px;
@@ -292,7 +292,7 @@
   transform: translateZ(0);
 }
 
-/* ===== SEARCH HEADER (mismo que Home, para no depender del home.scss) ===== */
+/* ===== SEARCH HEADER ===== */
 .searchHeader {
   position: fixed;
   top: -350px;
@@ -399,7 +399,7 @@
   box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.06);
 }
 
-/* ===== RESPONSIVE sin romper desktop ===== */
+/* ===== RESPONSIVE ===== */
 @media (max-width: 1920px) {
   .catalogHero__wrap,
   .catalogBody {
@@ -451,4 +451,4 @@
   .catalogBody {
     padding: 20px 18px 30px;
   }
-}
+} 

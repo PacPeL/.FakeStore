@@ -9,6 +9,9 @@ import profileIcon from "../assets/iconamoon_profile-light.svg";
 import cartIcon from "../assets/lineicons_cart-1.svg";
 import searchIcon from "../assets/icon.svg";
 
+// NEW: flecha de assets para filtros/orden
+import vectorArrow from "../assets/Vector.svg";
+
 export default function Catalog() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -128,7 +131,7 @@ export default function Catalog() {
     return ["Todos", ...Array.from(set)];
   }, [products]);
 
-  // filtro + búsqueda
+  // filtro + búsqueda (FRONT)
   const filtered = useMemo(() => {
     const qNorm = q.trim().toLowerCase();
 
@@ -145,7 +148,7 @@ export default function Catalog() {
     return arr;
   }, [products, q, activeCategory]);
 
-  // orden
+  // orden (FRONT)
   const sorted = useMemo(() => {
     const arr = [...filtered];
     switch (sortBy) {
@@ -162,8 +165,7 @@ export default function Catalog() {
         arr.sort((a, b) => String(b.title ?? "").localeCompare(String(a.title ?? "")));
         break;
       default:
-        // Relevância: deja el orden del API
-        break;
+        break; // Relevância
     }
     return arr;
   }, [filtered, sortBy]);
@@ -259,7 +261,14 @@ export default function Catalog() {
                 aria-label="Filtrar por"
               >
                 <span>Filtrar por</span>
-                <span className="catalogControls__chev" aria-hidden="true" />
+
+                {/* NEW arrow image */}
+                <img
+                  src={vectorArrow}
+                  alt=""
+                  className={`catalogControls__arrow ${filterOpen ? "isOpen" : ""}`}
+                  aria-hidden="true"
+                />
               </button>
 
               {filterOpen && (
@@ -292,7 +301,14 @@ export default function Catalog() {
                 aria-label="Ordenar por"
               >
                 <span>Ordenar por</span>
-                <span className="catalogControls__chev" aria-hidden="true" />
+
+                {/* NEW arrow image */}
+                <img
+                  src={vectorArrow}
+                  alt=""
+                  className={`catalogControls__arrow ${sortOpen ? "isOpen" : ""}`}
+                  aria-hidden="true"
+                />
               </button>
 
               {sortOpen && (
@@ -315,7 +331,7 @@ export default function Catalog() {
             </div>
           </div>
 
-          {/* primera fila dentro del bloque 1080 (top: 592 en CSS) */}
+          {/* primera fila dentro del bloque 1080 */}
           <div className="catalogHero__row">
             {firstRow.map((p) => (
               <Link key={p.id} to={`/produto/${p.id}`} className="card">
@@ -351,4 +367,3 @@ export default function Catalog() {
     </div>
   );
 }
-
