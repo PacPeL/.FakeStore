@@ -201,6 +201,35 @@ export default function Home() {
         </div>
       </div>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
       {/* ✅ AUTH MODAL (Figma) */}
       <div className={`authOverlay ${authOpen ? "isOpen" : ""}`} aria-hidden={!authOpen}>
         <div
@@ -291,6 +320,32 @@ export default function Home() {
           </form>
         </div>
       </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
       {/* ===== HERO ===== */}
       <section className="hero">
