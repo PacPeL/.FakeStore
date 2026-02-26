@@ -4,47 +4,32 @@
   background: linear-gradient(180deg, white 0%, #e8e8e8 100%);
 }
 
-/* ===== HERO WRAP (1080) ===== */
-.cartHero {
-  width: 100%;
-}
-
+/* ===== HERO WRAP ===== */
 .cartHero__wrap {
   width: 100%;
   max-width: 1920px;
-
-  /* antes: height: 1080px; */
-  min-height: 1180px; /* sigue dando aire cuando hay pocos items */
-  padding-bottom: 120px; /* aire inferior extra */
-
+  min-height: 1180px;
+  padding-bottom: 120px;
   margin: 0 auto;
   position: relative;
-
-  /* ✅ CLAVE: que el contenido largo no se corte */
-  overflow: visible; /* antes: hidden */
-
-  /* ✅ CLAVE: reserva el espacio donde “vivía” el top: 437px del layout */
+  overflow: visible;
   padding-top: 437px;
 }
 
-/* po */
 .cartHero__brand {
   position: absolute;
   left: 157px;
   top: 67px;
-  font-family: "Montserrat", system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  font-family: "Montserrat", system-ui;
   font-size: 18px;
   font-weight: 400;
   color: #000;
 }
 
-/* Drawer vertical igual Home */
 .drawer {
   position: absolute;
   right: 60px;
   top: 48px;
-
-  height: 331.33px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -57,23 +42,11 @@
   height: 33px;
   border: 0;
   background: transparent;
-  padding: 0;
   cursor: pointer;
-
   display: grid;
   place-items: center;
-  text-decoration: none;
 }
 
-.drawer__btn img {
-  width: 33px;
-  height: 33px;
-  object-fit: contain;
-  display: block;
-  transform: translateZ(0);
-}
-
-/* Título/desc centrados (Figma) */
 .cartHero__titleBox {
   position: absolute;
   left: 50%;
@@ -86,8 +59,7 @@
 }
 
 .cartHero__title {
-  width: 209px;
-  font-family: "Montserrat", system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  font-family: "Montserrat", system-ui;
   font-size: 48px;
   font-weight: 400;
   color: #818181;
@@ -95,8 +67,7 @@
 }
 
 .cartHero__desc {
-  width: 280px;
-  font-family: "Montserrat", system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  font-family: "Montserrat", system-ui;
   font-size: 20px;
   font-weight: 400;
   color: #818181;
@@ -105,22 +76,15 @@
 
 /* ===== Layout lista + resumo ===== */
 .cartLayout {
-  /* ❌ antes estaba absolute y no dejaba crecer el contenedor */
   position: relative;
-
-  /* ✅ ahora vive en el flujo normal y puede empujar el alto de la página */
   width: calc(100% - 64px);
   margin: 0 32px;
-
   display: flex;
   gap: 100px;
   align-items: flex-start;
-
-  /* ⬅️ si hay pocos items, esto ayuda a que no “termine” pegado abajo */
   padding-bottom: 80px;
 }
 
-/* LISTA */
 .cartList {
   width: 1259px;
   display: flex;
@@ -128,7 +92,6 @@
   gap: 28px;
 }
 
-/* ITEM (caja blanca) */
 .cartItem {
   width: 1159px;
   background: #fff;
@@ -136,19 +99,15 @@
   overflow: hidden;
 }
 
-/* ⬇️ MÁS ALTO + PADDING VERTICAL para que la imagen respire */
 .cartItem__inner {
   width: 100%;
   display: flex;
   align-items: center;
-
-  padding: 24px 100px; /* ⬅️ antes 0 100px */
-  min-height: 240px;   /* ⬅️ antes 203px */
-
+  padding: 40px 100px; /* más aire */
+  min-height: 270px;   /* igual al figma */
   gap: 40px;
 }
 
-/* ⬇️ mantengo el size, pero al tener más alto ya no choca con borde */
 .cartItem__img {
   width: 211px;
   height: 203px;
@@ -161,16 +120,14 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 18px;
-  overflow: hidden;
+  gap: 20px;
 }
 
 .cartItem__name {
-  font-family: "Montserrat", system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  font-family: "Montserrat", system-ui;
   font-size: 32px;
-  font-weight: 500;
+  font-weight: 400; /* más ligero como figma */
   color: #000;
-
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -183,7 +140,6 @@
   gap: 60px;
 }
 
-/* select tamaño */
 .cartItem__size {
   width: 85px;
   height: 42px;
@@ -191,17 +147,13 @@
   border: none;
   border-radius: 10px;
   padding: 0 12px;
-
   font-family: "Montserrat", system-ui;
   font-size: 20px;
   font-weight: 600;
   color: #000;
-
   cursor: pointer;
-  outline: none;
 }
 
-/* qty */
 .cartItem__qty {
   width: 108px;
   display: flex;
@@ -216,7 +168,6 @@
   border: none;
   border-radius: 10px;
   cursor: pointer;
-
   font-family: "Montserrat", system-ui;
   font-size: 20px;
   font-weight: 600;
@@ -230,35 +181,39 @@
   color: #000;
 }
 
-/* precio derecha */
 .cartItem__price {
   width: 220px;
   text-align: right;
-
-  font-family: "Montserrat", system-ui;
   font-size: 40px;
-  font-weight: 600;
+  font-family: "Numans", system-ui;
+  font-weight: 400;
+  word-wrap: break-word;
   color: #000;
+
+  /* subrayado tipográfico más visible */
+  text-decoration-line: underline;
+  text-decoration-thickness: 2px;
+  text-decoration-color: #000;
+  text-underline-offset: 6px;
+  padding-bottom: 4px;
 }
 
-/* remover */
-.cartItem__remove {
-  width: fit-content;
-  background: transparent;
-  border: none;
-  cursor: pointer;
 
-  font-family: "Montserrat", system-ui;
-  font-size: 14px;
-  font-weight: 600;
-  color: #c62828;
-  padding: 0;
-}
+
+
+
+
+
+
+
+
+
+
 
 /* ===== RESUMO ===== */
 .cartSummary {
   width: 535px;
-  height: 643px;
+  height: 535px;
   background: #fff;
   border-radius: 15px;
   overflow: hidden;
@@ -270,35 +225,117 @@
 .cartSummary__top {
   padding: 50px;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start; /* ✅ ya no reservamos espacio para la derecha */
   align-items: flex-start;
   gap: 40px;
 }
 
+.cartSummary__left {
+  width: 100%;
+}
+
 .cartSummary__title {
   font-family: "Lexend Zetta", "Montserrat", system-ui;
-  font-size: 36px;
-  font-weight: 400;
+  padding-bottom: 70px;
+  font-size: 40px;
+  font-weight: 500;
   color: #000;
 }
 
-.cartSummary__items {
-  margin-top: 12px;
-  font-family: "Montserrat", system-ui;
+
+/* ✅ OCULTA el total al lado de "Resumo" SIN tocar el JSX */
+.cartSummary__right,
+.cartSummary__value {
+  display: none !important;
+}
+
+.cartSummary__divider {
+  width: 485px;
+  height: 4px;
+  background: #e2e2e2;
+  border-radius: 100px;
+  margin: 0 auto;
+}
+
+/* ===== BODY ===== */
+.cartSummary__body {
+  padding: 40px 50px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ===========================
+   ✅ ITEMS como el TOTAL
+   (aside que pasaste)
+=========================== */
+
+/* Fila item: qty izq, precio der */
+.cartSummary__itemRow {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+}
+
+/* Qty izq */
+.cartSummary__itemQty {
+  font-family: "Lexend Zetta", "Montserrat", system-ui !important;
+  font-size: 22px !important;
+  font-weight: 500 !important;
+  color: #000;
+}
+
+/* Precio der: mismo tamaño para R$ y número porque es 1 solo nodo */
+.cartSummary__itemPrice {
+  font-family: "Lexend Zetta", "Montserrat", system-ui !important;
+  font-size: 22px !important;      /* ✅ mismo tamaño R$ + valor */
+  font-weight: 500 !important;     /* ✅ un poquito más grueso */
+  color: #000;
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* Row for each product group in the summary: qty on left, unit price on right */
+.cartSummary__itemRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+/* quantity / label for the row */
+.cartSummary__itemQty {
+  font-family: "Numans", system-ui;
   font-size: 20px;
   font-weight: 400;
   color: #000;
 }
 
+/* price for the row (individual item price), subrayado tipográfico */
+.cartSummary__itemPrice {
+  font-family: "Numans", system-ui;
+  font-size: 20px;
+  font-weight: 400;
+  color: #000;
+  text-decoration-line: underline;
+  text-decoration-thickness: 2px;
+  text-decoration-color: #000;
+  text-underline-offset: 4px;
+}
+
+/* right column in top (keeps the overall cart total value) */
 .cartSummary__right {
   padding-top: 24px;
   padding-bottom: 24px;
 }
 
 .cartSummary__value {
-  font-family: "Montserrat", system-ui;
+  font-family: "Numans", system-ui; /* tipografía figma */
   font-size: 24px;
-  font-weight: 600;
+  font-weight: 400;
   color: #000;
   text-align: right;
 }
@@ -319,26 +356,82 @@
 }
 
 .cartSummary__label {
-  font-family: "Montserrat", system-ui;
-  font-size: 20px;
-  font-weight: 600;
+  font-family: "Numans", system-ui;
+  font-size: 40px;
+  font-weight: 400;
   color: #000;
 }
 
+/* fila total: label y valor alineados a extremos */
+.cartSummary__totalRow {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+}
+
+
+
+
+
+
+
+
+
+
+.cartSummary__label {
+  font-family: "Lexend Zetta", "Montserrat", system-ui;
+  font-size: 40px;
+  font-weight: 500;
+  color: #000;
+}
+
+/* Contenedor del precio total */
+.cartSummary__totalValue {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+
+  padding-bottom: 12px;
+  font-family: "Lexend Zetta", "Montserrat", system-ui;
+  font-size: 40px;   /* ✅ tamaño base */
+  font-weight: 600;
+  color: #000;
+  white-space: nowrap;
+}
+/* moneda pequeña si la quieres separada */
+.cartSummary__currency {
+  font-size: inherit;  /* ✅ igual que el valor */
+  font-weight: 650;    /* ✅ un poco más grueso */
+  color: #000;
+}
+
+/* underline for the big total number */
+.cartSummary__totalUnderline {
+  font-size: inherit;
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* checkout button */
 .cartSummary__checkout {
   margin-top: 8px;
-  height: 54px;
+  height: 60px;
   border: none;
   border-radius: 12px;
   cursor: pointer;
 
-  background: #3d3d3d;
+  background: #000000;
   color: #fff;
-  font-family: "Montserrat", system-ui;
-  font-size: 16px;
-  font-weight: 700;
+  font-family: "Lexend Zetta", "Montserrat", system-ui;
+  font-size: 22px;
+  font-weight: 200;
 }
 
+
+/* clear button (kept if needed) */
 .cartSummary__clear {
   height: 44px;
   border: none;
@@ -352,16 +445,25 @@
   font-weight: 700;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
 /* ===== EMPTY ===== */
 .cartEmpty {
-  /* lo dejo como estaba para no romper tu layout vacío */
   position: absolute;
   left: 50%;
   top: 460px;
   transform: translateX(-50%);
-  width: 520px;
   text-align: center;
-
   display: flex;
   flex-direction: column;
   gap: 18px;
@@ -369,28 +471,22 @@
 }
 
 .cartEmpty__text {
-  font-family: "Montserrat", system-ui;
+  font-family: "Lexend Zetta", "Montserrat", system-ui;
   font-size: 18px;
   color: #818181;
 }
 
 .cartEmpty__btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
   height: 50px;
-  padding: 0 22px;
+  padding: 15px 22px;
   border-radius: 12px;
-  text-decoration: none;
-
   background: #3d3d3d;
   color: #fff;
   font-family: "Montserrat", system-ui;
   font-weight: 700;
 }
 
-/* ===== FOOTER BAR (igual Home) ===== */
+/* ===== FOOTER BAR ===== */
 .footerbar {
   width: 100%;
   height: 60px;
@@ -420,101 +516,6 @@
   100% { opacity: 0; transform: translateY(20px); }
 }
 
-/* ===== SEARCH HEADER (igual Home) ===== */
-.searchHeader {
-  position: fixed;
-  top: -350px;
-  left: 0;
-  width: 100%;
-  background: #fff;
-  padding: 60px 30px;
-  z-index: 1000;
-  transition: top 0.3s ease;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 30px;
-
-  min-height: 300px;
-}
-
-.searchHeader.isOpen {
-  top: 0;
-}
-
-.searchHeader__bar {
-  width: 100%;
-  max-width: 600px;
-  height: 44px;
-  background: #e2e2e2;
-  border-radius: 20px;
-
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 0 15px;
-}
-
-.searchHeader__icon {
-  width: 17px;
-  height: 17px;
-}
-
-.searchHeader__input {
-  flex: 1;
-  border: none;
-  outline: none;
-  background: transparent;
-
-  font-family: "Montserrat", system-ui;
-  font-size: 14px;
-  font-weight: 600;
-  color: #000;
-
-  &::placeholder { color: #818181; }
-}
-
-.searchHeader__section {
-  font-family: "Montserrat", system-ui;
-  font-size: 16px;
-  font-weight: 600;
-  color: #818181;
-  text-align: center;
-  width: 100%;
-}
-
-.searchHeader__tags {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
-  max-width: 800px;
-}
-
-.tag {
-  background: #e2e2e2;
-  border: none;
-  outline: none;
-  box-shadow: none;
-  border-radius: 20px;
-  padding: 6px 14px;
-
-  font-size: 15px;
-  font-family: "Montserrat", system-ui;
-  font-weight: 500;
-  color: #000;
-
-  cursor: pointer;
-  transition: background 0.2s ease, transform 0.08s ease;
-  -webkit-appearance: none;
-  appearance: none;
-}
-
-.tag:hover { background: #d0d0d0; }
-.tag:active { transform: translateY(1px); }
-.tag:focus { outline: none; box-shadow: 0 0 0 3px rgba(0,0,0,0.06); }
-
 /* ===== RESPONSIVE ===== */
 @media (max-width: 1500px) {
   .cartLayout { gap: 40px; }
@@ -536,8 +537,6 @@
   .cartHero__wrap {
     min-height: auto;
     padding: 32px 18px 60px;
-
-    /* en móvil ya no queremos ese padding-top fijo */
     padding-top: 0;
   }
 
@@ -563,9 +562,6 @@
     width: 100%;
     gap: 24px;
     padding-bottom: 40px;
-
-    /* como ahora en desktop usamos margin lateral,
-       en móvil lo reseteamos */
     margin: 0;
   }
 
@@ -585,6 +581,8 @@
   .cartItem__price {
     width: auto;
     font-size: 24px;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
   }
 
   .cartSummary {
@@ -595,4 +593,10 @@
   .cartSummary__divider {
     width: calc(100% - 40px);
   }
+
+  /* ✅ responsive summary */
+  .cartSummary__label { font-size: 18px; }
+  .cartSummary__totalValue { font-size: 18px; }
+  .cartSummary__itemQty { font-size: 16px; }
+  .cartSummary__itemPrice { font-size: 16px; }
 }
