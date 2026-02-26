@@ -9,6 +9,8 @@ import profileIcon from "../assets/iconamoon_profile-light.svg";
 import cartIcon from "../assets/lineicons_cart-1.svg";
 import searchIcon from "../assets/icon.svg";
 
+const SIZES = [34, 35, 36, 37, 38, 39, 40, 41, 42, 43];
+
 export default function Cart() {
   const { state, removeFromCart, setQty, clearCart, cartTotal, setSize } = useStore();
   const cart = state.cart;
@@ -170,7 +172,7 @@ export default function Cart() {
               {/* LISTA */}
               <div className="cartList">
                 {cart.map((x) => (
-                  <div key={x.id} className="cartItem">
+                  <div key={`${x.id}-${x.size}`} className="cartItem">
                     <div className="cartItem__inner">
                       <img className="cartItem__img" src={x.image} alt={x.title} />
 
@@ -178,18 +180,18 @@ export default function Cart() {
                         <div className="cartItem__name">{x.title}</div>
 
                         <div className="cartItem__controls">
+                          {/* ✅ ya viene con talla seleccionada, sin "Selecione" */}
                           <select
                             className="cartItem__size"
-                            value={x.size || ""}
-                            onChange={(e) => setSize(x.id, e.target.value)}
+                            value={Number(x.size)}
+                            onChange={(e) => setSize(x.id, x.size, Number(e.target.value))}
                             aria-label="Selecionar tamanho"
                           >
-                            <option value="">Selecione</option>
-                            <option value="39">39</option>
-                            <option value="40">40</option>
-                            <option value="41">41</option>
-                            <option value="42">42</option>
-                            <option value="43">43</option>
+                            {SIZES.map((n) => (
+                              <option key={n} value={n}>
+                                {n}
+                              </option>
+                            ))}
                           </select>
 
                           <div className="cartItem__qty">
@@ -198,27 +200,27 @@ export default function Cart() {
                               onClick={() => {
                                 const newQty = Math.max(0, (x.qty ?? 0) - 1);
                                 if (newQty <= 0) {
-                                  removeFromCart(x.id);
+                                  removeFromCart(x.id, x.size);
                                 } else {
-                                  setQty(x.id, newQty);
+                                  setQty(x.id, x.size, newQty);
                                 }
                               }}
                               aria-label="Diminuir quantidade"
                             >
                               -
                             </button>
+
                             <span className="cartItem__qtyVal">{x.qty}</span>
+
                             <button
                               className="cartItem__qtyBtn"
-                              onClick={() => setQty(x.id, (x.qty ?? 0) + 1)}
+                              onClick={() => setQty(x.id, x.size, (x.qty ?? 0) + 1)}
                               aria-label="Aumentar quantidade"
                             >
                               +
                             </button>
                           </div>
                         </div>
-
-                        {/* Remover button eliminado según solicitud */}
                       </div>
 
                       <div className="cartItem__price">R$ {(x.price * x.qty).toFixed(2)}</div>
