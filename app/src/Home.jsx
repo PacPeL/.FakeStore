@@ -21,6 +21,13 @@ export default function Home() {
   const searchInputRef = useRef(null);
   const navigate = useNavigate();
 
+
+
+
+
+
+
+
   // ✅ modal login/register
   const [authOpen, setAuthOpen] = useState(false);
   const [authTab, setAuthTab] = useState("login"); // "login" | "register"
@@ -31,6 +38,12 @@ export default function Home() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+
+
+
+
+
+  
   // atajo de teclado Ctrl+K y Escape
   useEffect(() => {
     const handleShortcut = (e) => {
