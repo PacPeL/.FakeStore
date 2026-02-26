@@ -21,13 +21,15 @@ export default function Home() {
   const searchInputRef = useRef(null);
   const navigate = useNavigate();
 
-  // ✅ NEW: modal login/register
+  // ✅ modal login/register
   const [authOpen, setAuthOpen] = useState(false);
   const [authTab, setAuthTab] = useState("login"); // "login" | "register"
   const authRef = useRef(null);
 
-  // form state (por ahora UI)
+  // form state
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   // atajo de teclado Ctrl+K y Escape
   useEffect(() => {
@@ -38,7 +40,7 @@ export default function Home() {
       }
       if (e.key === "Escape") {
         setSearchOpen(false);
-        setAuthOpen(false); // ✅ cierra modal también
+        setAuthOpen(false);
       }
     };
     window.addEventListener("keydown", handleShortcut);
@@ -52,11 +54,8 @@ export default function Home() {
     const handleClickOutside = (e) => {
       if (e.target.closest(".searchHeader")) return;
       if (e.target.closest(".drawer")) return;
-
-      // ✅ si click dentro del modal, no cerrar
       if (e.target.closest(".authModal")) return;
 
-      // si está abierto auth, cerrar auth; si está abierto search, cerrar search
       if (authOpen) setAuthOpen(false);
       if (searchOpen) setSearchOpen(false);
     };
@@ -75,13 +74,13 @@ export default function Home() {
     }
   }, [searchOpen]);
 
-  // ✅ enfocar email cuando abre modal
+  // enfocar email cuando abre modal
   useEffect(() => {
     if (!authOpen) return;
     setTimeout(() => {
       const el = authRef.current?.querySelector("input");
       if (el) el.focus();
-    }, 220); // coincide con animación
+    }, 220);
   }, [authOpen, authTab]);
 
   useEffect(() => {
@@ -110,11 +109,8 @@ export default function Home() {
       ?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const toggleSearch = () => {
-    setSearchOpen((prev) => !prev);
-  };
+  const toggleSearch = () => setSearchOpen((prev) => !prev);
 
-  // navegar al catálogo con el query (cierra header)
   const goToCatalog = (query) => {
     const qParam = query ?? "";
     navigate(`/catalog?q=${encodeURIComponent(qParam)}`);
@@ -122,9 +118,7 @@ export default function Home() {
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      goToCatalog(q);
-    }
+    if (e.key === "Enter") goToCatalog(q);
   };
 
   const handleTagClick = (tag) => {
@@ -142,26 +136,33 @@ export default function Home() {
     "Masculino",
   ];
 
-  // ✅ NEW: open auth modal from drawer
+  // open auth modal
   const openAuth = (tab = "login") => {
     setAuthTab(tab);
     setAuthOpen(true);
-    setSearchOpen(false); // por si acaso
+    setSearchOpen(false);
   };
 
-  // ✅ NEW: placeholder handlers (para Firebase después)
+  // placeholder submit
   const handleSubmitAuth = (e) => {
     e.preventDefault();
 
+    // if (authTab === "register" && password !== confirmPassword) {
+    //   // TODO mostrar toast/erro
+    //   return;
+    // }
+
     // if (authTab === "login") {
     //   // TODO Firebase signInWithEmailAndPassword(auth, email, password)
-    // }
-    // if (authTab === "register") {
+    // } else {
     //   // TODO Firebase createUserWithEmailAndPassword(auth, email, password)
     // }
 
-    // por ahora solo UI
-    alert(`${authTab === "login" ? "Login" : "Cadastrar"}: ${email}`);
+    alert(
+      authTab === "login"
+        ? `Login: ${email}`
+        : `Cadastrar: ${email}`
+    );
   };
 
   return (
@@ -200,7 +201,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ✅ AUTH MODAL (popup) */}
+      {/* ✅ AUTH MODAL (Figma) */}
       <div className={`authOverlay ${authOpen ? "isOpen" : ""}`} aria-hidden={!authOpen}>
         <div
           className={`authModal ${authOpen ? "isOpen" : ""}`}
@@ -228,44 +229,63 @@ export default function Home() {
             </button>
           </div>
 
-          {/* underline */}
+          {/* underline gradient */}
           <div className="authUnderlineWrap">
-            <div
-              className="authUnderline"
-              style={{
-                transform: authTab === "login" ? "translateX(0)" : "translateX(120px)",
-              }}
-            />
+            <div className={`authUnderline ${authTab === "register" ? "isRegister" : "isLogin"}`} />
           </div>
 
-          {/* body */}
-          <form className="authBody" onSubmit={handleSubmitAuth}>
-            <div className="authField">
-              <div className="authLabel">E-mail</div>
-
-              <div className="authInputBox">
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Digitar..."
-                  aria-label="E-mail"
-                />
+          {/* form */}
+          <form className={`authForm ${authTab === "register" ? "isRegister" : ""}`} onSubmit={handleSubmitAuth}>
+            <div className="authForm__inner">
+              {/* Email */}
+              <div className="authGroup">
+                <div className="authLabel">E-mail</div>
+                <div className="authInputBox">
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Digitar..."
+                    aria-label="E-mail"
+                  />
+                </div>
               </div>
+
+              {/* Senha */}
+              <div className="authGroup">
+                <div className="authLabel">Senha</div>
+                <div className="authInputBox">
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="**********"
+                    aria-label="Senha"
+                  />
+                </div>
+              </div>
+
+              {/* Confirmar Senha (solo register) */}
+              {authTab === "register" && (
+                <div className="authGroup">
+                  <div className="authLabel">Confirmar Senha</div>
+                  <div className="authInputBox">
+                    <input
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="**********"
+                      aria-label="Confirmar Senha"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
-            {/* ✅ botones opcionales (puedes esconderlos si aún no quieres) */}
-            <div className="authActions">
-              <button className="authBtn" type="submit">
-                {authTab === "login" ? "Entrar" : "Criar conta"}
-              </button>
-
-              <button
-                className="authClose"
-                type="button"
-                onClick={() => setAuthOpen(false)}
-              >
-                Fechar
+            {/* button */}
+            <div className="authFooter">
+              <button className="authSubmit" type="submit">
+                {authTab === "login" ? "Entrar" : "Criar Conta"}
               </button>
             </div>
           </form>
@@ -302,7 +322,6 @@ export default function Home() {
               <img src={drawerIcon} alt="" />
             </button>
 
-            {/* ✅ PERFIL ahora abre popup */}
             <button
               className="drawer__btn"
               type="button"
@@ -316,7 +335,6 @@ export default function Home() {
               <img src={cartIcon} alt="" />
             </Link>
 
-            {/* LUPA: toggle header */}
             <button
               className="drawer__btn"
               type="button"
