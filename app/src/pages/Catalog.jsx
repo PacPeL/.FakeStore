@@ -9,6 +9,8 @@ import drawerIcon from "../assets/drawer_icon.svg";
 import profileIcon from "../assets/iconamoon_profile-light.svg";
 import cartIcon from "../assets/lineicons_cart-1.svg";
 import searchIcon from "../assets/icon.svg";
+import googleIcon from "../assets/icon_google.svg"; 
+
 
 // flecha para filtros/orden
 import vectorArrow from "../assets/Vector.svg";

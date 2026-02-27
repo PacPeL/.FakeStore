@@ -11,6 +11,8 @@ import drawerIcon from "../assets/drawer_icon.svg";
 import profileIcon from "../assets/iconamoon_profile-light.svg";
 import cartIcon from "../assets/lineicons_cart-1.svg";
 import searchIcon from "../assets/icon.svg";
+import googleIcon from "../assets/icon_google.svg"; 
+
 
 const SIZES = [34, 35, 36, 37, 38, 39, 40, 41, 42, 43];
 const ORIGINAL_MARKUP = 0.10; // “de R$ …”
