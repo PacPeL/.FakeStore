@@ -246,96 +246,140 @@ export default function Home() {
 
 
 
-      {/* ✅ AUTH MODAL (Figma) */}
-      <div className={`authOverlay ${authOpen ? "isOpen" : ""}`} aria-hidden={!authOpen}>
-        <div
-          className={`authModal ${authOpen ? "isOpen" : ""}`}
-          role="dialog"
-          aria-modal="true"
-          aria-label="Login / Cadastrar"
-          ref={authRef}
-        >
-          {/* tabs */}
-          <div className="authTabs">
-            <button
-              type="button"
-              className={`authTab ${authTab === "login" ? "isActive" : ""}`}
-              onClick={() => setAuthTab("login")}
-            >
-              Login
-            </button>
+{/* ✅ AUTH MODAL (Figma) */}
+<div
+  className={`authOverlay ${authOpen ? "isOpen" : ""}`}
+  aria-hidden={!authOpen}
+>
+  <div
+    className={`authModal ${authOpen ? "isOpen" : ""}`}
+    role="dialog"
+    aria-modal="true"
+    aria-label="Login / Cadastrar"
+    ref={authRef}
+  >
+    {/* tabs */}
+    <div className="authTabs">
+      <button
+        type="button"
+        className={`authTab ${authTab === "login" ? "isActive" : ""}`}
+        onClick={() => setAuthTab("login")}
+      >
+        Login
+      </button>
 
-            <button
-              type="button"
-              className={`authTab ${authTab === "register" ? "isActive" : ""}`}
-              onClick={() => setAuthTab("register")}
-            >
-              Cadastrar
-            </button>
+      <button
+        type="button"
+        className={`authTab ${authTab === "register" ? "isActive" : ""}`}
+        onClick={() => setAuthTab("register")}
+      >
+        Cadastrar
+      </button>
+    </div>
+
+    {/* underline gradient */}
+    <div className="authUnderlineWrap">
+      <div
+        className={`authUnderline ${
+          authTab === "register" ? "isRegister" : "isLogin"
+        }`}
+      />
+    </div>
+
+    {/* form */}
+    <form
+      className={`authForm ${authTab === "register" ? "isRegister" : ""}`}
+      onSubmit={handleSubmitAuth}
+    >
+      <div className="authForm__inner">
+        {/* Email */}
+        <div className="authGroup">
+          <div className="authLabel">E-mail</div>
+          <div className="authInputBox">
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Digitar..."
+              aria-label="E-mail"
+            />
           </div>
-
-          {/* underline gradient */}
-          <div className="authUnderlineWrap">
-            <div className={`authUnderline ${authTab === "register" ? "isRegister" : "isLogin"}`} />
-          </div>
-
-          {/* form */}
-          <form className={`authForm ${authTab === "register" ? "isRegister" : ""}`} onSubmit={handleSubmitAuth}>
-            <div className="authForm__inner">
-              {/* Email */}
-              <div className="authGroup">
-                <div className="authLabel">E-mail</div>
-                <div className="authInputBox">
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Digitar..."
-                    aria-label="E-mail"
-                  />
-                </div>
-              </div>
-
-              {/* Senha */}
-              <div className="authGroup">
-                <div className="authLabel">Senha</div>
-                <div className="authInputBox">
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="**********"
-                    aria-label="Senha"
-                  />
-                </div>
-              </div>
-
-              {/* Confirmar Senha (solo register) */}
-              {authTab === "register" && (
-                <div className="authGroup">
-                  <div className="authLabel">Confirmar Senha</div>
-                  <div className="authInputBox">
-                    <input
-                      type="password"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      placeholder="**********"
-                      aria-label="Confirmar Senha"
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* button */}
-            <div className="authFooter">
-              <button className="authSubmit" type="submit">
-                {authTab === "login" ? "Entrar" : "Criar Conta"}
-              </button>
-            </div>
-          </form>
         </div>
+
+        {/* Senha */}
+        <div className="authGroup">
+          <div className="authLabel">Senha</div>
+          <div className="authInputBox">
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="**********"
+              aria-label="Senha"
+            />
+          </div>
+        </div>
+
+        {/* ✅ Login: link "Esqueci minha senha." */}
+        {authTab === "login" && (
+          <div className="authForgotWrap">
+            <button
+              type="button"
+              className="authForgot"
+              onClick={() => {
+                // TODO: fluxo de reset (cuando haya backend)
+              }}
+            >
+              Esqueci minha senha.
+            </button>
+          </div>
+        )}
+
+        {/* Confirmar Senha (solo register) */}
+        {authTab === "register" && (
+          <div className="authGroup">
+            <div className="authLabel">Confirmar Senha</div>
+            <div className="authInputBox">
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="**********"
+                aria-label="Confirmar Senha"
+              />
+            </div>
+          </div>
+        )}
       </div>
+
+      {/* ✅ Footer (Google + submit) */}
+      <div
+        className={`authFooter ${
+          authTab === "login" ? "isLogin" : "isRegister"
+        }`}
+      >
+        {/* ✅ Google (ambos tabs, sin backend todavía) */}
+        <button
+          type="button"
+          className="authGoogleBtn"
+          onClick={() => {
+            // TODO: Google auth (cuando haya backend)
+          }}
+        >
+          <img className="authGoogleBtn__icon" src={googleIcon} alt="" />
+          <span>
+            {authTab === "login" ? "Entrar com Google" : "Cadastrar com Google"}
+          </span>
+        </button>
+
+        {/* ✅ submit principal */}
+        <button className="authSubmit" type="submit">
+          {authTab === "login" ? "Entrar" : "Criar Conta"}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
 
 
 
