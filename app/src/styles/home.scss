@@ -260,9 +260,9 @@
   width: auto;
   height: auto;
   text-align: center;
-
+  padding: 10px;
   font-family: "Lexend Zetta", "Montserrat", system-ui;
-  font-size: 20px;
+  font-size: 25px !important;
   font-weight: 400; /* ✅ menos grosor */
   line-height: 1.2;
 
@@ -281,7 +281,7 @@
 
   font-family: "Lexend Zetta", "Montserrat", system-ui !important;
   font-size: 36px;
-  font-weight: 300; /* ✅ menos grosor */
+  font-weight: 450 !important; /* ✅ menos grosor */
   line-height: 39px;
 }
 
@@ -296,9 +296,10 @@
 
 /* ✅ Estrella vacía blanca con borde negro */
 .card__star {
+  padding: 6px;
   font-size: 28px;         /* ✅ más grande */
   color: #fff;             /* ✅ vacía blanca */
-  -webkit-text-stroke: 1.6px #000; /* ✅ borde negro */
+  -webkit-text-stroke: 1.0px #000; /* ✅ borde negro */
   line-height: 1;
 }
 
