@@ -483,37 +483,69 @@ export default function Home() {
         <p className="newsHead__sub">Confira já!</p>
       </section>
 
-      {/* ===== GRID ===== */}
-      <section className="grid">
-        {loading ? (
-          <div className="grid__loading">Carregando produtos...</div>
-        ) : (
-          <div className="grid__rows">
-            <div className="grid__row">
-              {gridItems.slice(0, 4).map((p) => (
-                <Link key={p.id} to={`/produto/${p.id}`} className="card">
-                  <img className="card__img" src={p.image} alt={p.title} loading="lazy" />
-                  <div className="card__text">
-                    <div className="card__name">{p.title}</div>
-                    <div className="card__price">R$ {p.price.toFixed(2)}</div>
-                  </div>
-                </Link>
-              ))}
+
+
+
+
+
+
+
+
+
+{/* ===== GRID ===== */}
+<section className="grid">
+  {loading ? (
+    <div className="grid__loading">Carregando produtos...</div>
+  ) : (
+    <div className="grid__rows">
+      <div className="grid__row">
+        {gridItems.slice(0, 4).map((p) => (
+          <Link key={p.id} to={`/produto/${p.id}`} className="card">
+            <img className="card__img" src={p.image} alt={p.title} loading="lazy" />
+
+            <div className="card__text">
+              <div className="card__nameWrap">
+                <div className="card__name">{p.title}</div>
+              </div>
+
+              <div className="card__price">R$ {p.price.toFixed(2)}</div>
+
+
+
+              {/* Figma: fila con 5 “íconos” */}
+              <div className="card__icons">
+                {Array.from({ length: 5 }).map((_, i) => {
+                  const rating = Math.round(p.rating?.rate || 0);
+                  return (
+                    <span
+                      key={i}
+                      className={`card__star ${i < rating ? "isFilled" : ""}`}
+                    >
+                      ★
+                    </span>
+                  );
+                })}
+              </div>
+
+
             </div>
-            <div className="grid__row">
-              {gridItems.slice(4, 8).map((p) => (
-                <Link key={p.id} to={`/produto/${p.id}`} className="card">
-                  <img className="card__img" src={p.image} alt={p.title} loading="lazy" />
-                  <div className="card__text">
-                    <div className="card__name">{p.title}</div>
-                    <div className="card__price">R$ {p.price.toFixed(2)}</div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
-      </section>
+          </Link>
+        ))}
+      </div>
+    </div>
+  )}
+</section>
+
+
+
+
+
+
+
+
+
+
+
 
       {/* ===== BANNER ===== */}
       <section className="banner">
