@@ -364,3 +364,16 @@
   display: inline-block;
   line-height: 1.2; /* evita que parezca "cortado" */
 }
+
+
+
+
+/* ===== SCALE GENERAL (solo agranda un poco todo) ===== */
+
+.authModal {
+  transform: translate(-50%, -50%) translateY(calc(-50vh - 140px)) scale(1.15);
+}
+
+.authModal.isOpen {
+  transform: translate(-50%, -50%) translateY(0) scale(1.15);
+}

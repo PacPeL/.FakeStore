@@ -1,188 +1,183 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api } from "./services/api";
+import { useStore } from "./store.jsx";
+import { useAuthModal } from "./hooks/useAuthModal.js";
+import AuthModal from "./components/AuthModal.jsx";
 import "./styles/home.scss";
 import "./styles/auth.scss";
+import "./styles/profile.scss";
+import "./styles/logo.scss";
+
 
 import goldenBoots from "./assets/golden_boots.png";
-import stadium from "./assets/stadium.png";
-
-import drawerIcon from "./assets/drawer_icon.svg";
+import stadium     from "./assets/stadium.png";
+import drawerIcon  from "./assets/drawer_icon.svg";
 import profileIcon from "./assets/iconamoon_profile-light.svg";
-import cartIcon from "./assets/lineicons_cart-1.svg";
-import searchIcon from "./assets/icon.svg";
-import googleIcon from "./assets/icon_google.svg"; 
+import cartIcon    from "./assets/lineicons_cart-1.svg";
+import searchIcon  from "./assets/icon.svg";
+import logo        from "./assets/logo.svg";
+import check        from "./assets/check.svg";
+import truck       from "./assets/truck.svg";
+import box       from "./assets/box.svg";
 
 
 export default function Home() {
-  const [items, setItems] = useState([]);
+  const [items, setItems]     = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const [q, setQ] = useState("");
+  const { isLoggedIn, logout, authUser, setAuthUserFromGoogle } = useStore();
+  const auth = useAuthModal();
+
+  const [q, setQ]                   = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
+  const searchInputRef              = useRef(null);
+  const navigate                    = useNavigate();
 
-  const searchInputRef = useRef(null);
-  const navigate = useNavigate();
+  // ✅ PROFILE (simple, local en Home)
+  const [profileOpen, setProfileOpen] = useState(false);
+
+const [profileView, setProfileView] = useState("profile"); // "profile" | "orders"
+const [ordersTab, setOrdersTab] = useState("confirmed");   // "confirmed" | "preparing" | "shipping"
+
+const [profileForm, setProfileForm] = useState({
+  fullName: "",
+  email: authUser?.email ?? "",
+  phone: "",
+  cep: "",
+});
+
+// --- helpers ---
+const openOrders = (tab) => {
+  setOrdersTab(tab);
+  setProfileView("orders");
+};
+
+const closeProfileAll = () => {
+  setProfileOpen(false);
+  setProfileView("profile");
+};
+
+// Dummy data (CONECTAR AO BACKEND DEPOIS)
+const ordersByTab = {
+  confirmed: [
+    { id: "S1-29384756", title: "Chuteira Campo", size: "41", qty: 1, img: "" },
+    { id: "S1-11839201", title: "Meião GMA", size: "U", qty: 2, img: "" },
+  ],
+  preparing: [
+    { id: "S1-77441122", title: "Luva Goleiro", size: "M", qty: 1, img: "" },
+  ],
+  shipping: [
+    { id: "S1-99001122", title: "Calça Térmica GMA", size: "G", qty: 1, img: "" },
+  ],
+};
+
+const ordersTitle =
+  ordersTab === "confirmed" ? "Pedidos Confirmados"
+  : ordersTab === "preparing" ? "Pedidos Preparando"
+  : "Pedidos A caminho";
+
+const ordersSub =
+  ordersTab === "confirmed" ? "Confira seus pedidos já confirmados pela S1!"
+  : ordersTab === "preparing" ? "Estamos preparando seus pedidos."
+  : "Seus pedidos já estão a caminho!";
 
 
 
 
 
 
+  const recentTags = [
+    "Chuteira Adulto", "Chuteira Infantil", "Meião GMA",
+    "Luva Goleiro", "Calça Térmica GMA", "Feminino", "Masculino",
+  ];
 
-
-  // ✅ modal login/register
-  const [authOpen, setAuthOpen] = useState(false);
-  const [authTab, setAuthTab] = useState("login"); // "login" | "register"
-  const authRef = useRef(null);
-
-  // form state
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-
-
-
-
-
-
-
-  // atajo de teclado Ctrl+K y Escape
   useEffect(() => {
-    const handleShortcut = (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
-        e.preventDefault();
-        setSearchOpen(true);
-      }
-      if (e.key === "Escape") {
-        setSearchOpen(false);
-        setAuthOpen(false);
-      }
-    };
-    window.addEventListener("keydown", handleShortcut);
-    return () => window.removeEventListener("keydown", handleShortcut);
+    auth.handleGoogleCallback(setAuthUserFromGoogle);
+    auth.handleResetCallback();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // cerrar al clickar fuera (pero no dentro del header ni del drawer ni del modal)
-  useEffect(() => {
-    if (!searchOpen && !authOpen) return;
-
-    const handleClickOutside = (e) => {
-      if (e.target.closest(".searchHeader")) return;
-      if (e.target.closest(".drawer")) return;
-      if (e.target.closest(".authModal")) return;
-
-      if (authOpen) setAuthOpen(false);
-      if (searchOpen) setSearchOpen(false);
-    };
-
-    document.addEventListener("click", handleClickOutside);
-    return () => document.removeEventListener("click", handleClickOutside);
-  }, [searchOpen, authOpen]);
-
-  // enfocar input cuando se abre el header
-  useEffect(() => {
-    if (searchOpen && searchInputRef.current) {
-      setTimeout(() => {
-        searchInputRef.current.focus();
-        if (searchInputRef.current.select) searchInputRef.current.select();
-      }, 80);
-    }
-  }, [searchOpen]);
-
-  // enfocar email cuando abre modal
-  useEffect(() => {
-    if (!authOpen) return;
-    setTimeout(() => {
-      const el = authRef.current?.querySelector("input");
-      if (el) el.focus();
-    }, 220);
-  }, [authOpen, authTab]);
 
   useEffect(() => {
     (async () => {
       setLoading(true);
-      const prods = await api.getProducts();
-      setItems(prods);
-      setLoading(false);
-    })().catch((err) => {
-      console.error(err);
-      setLoading(false);
-    });
+      try { setItems(await api.getProducts()); }
+      catch (err) { console.error(err); }
+      finally { setLoading(false); }
+    })();
   }, []);
 
   const filtered = useMemo(() => {
-    const qNorm = q.trim().toLowerCase();
-    if (!qNorm) return items;
-    return items.filter((p) => (p.title ?? "").toLowerCase().includes(qNorm));
+    const qn = q.trim().toLowerCase();
+    return qn ? items.filter((p) => p.title.toLowerCase().includes(qn)) : items;
   }, [items, q]);
 
-  const gridItems = filtered.slice(0, 8);
+  useEffect(() => {
+    const handle = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault(); setSearchOpen(true);
+      }
+      if (e.key === "Escape") {
+        setSearchOpen(false);
+        auth.closeAuth();
+        setProfileOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handle);
+    return () => window.removeEventListener("keydown", handle);
+  }, [auth]);
 
-  const goToNews = () => {
-    document
-      .getElementById("novidades")
-      ?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
+  useEffect(() => {
+    if (!searchOpen && !auth.authOpen && !profileOpen) return;
 
-  const toggleSearch = () => setSearchOpen((prev) => !prev);
+    const handle = (e) => {
+      if (e.target.closest(".searchHeader")) return;
+      if (e.target.closest(".drawer")) return;
+      if (e.target.closest(".authModal")) return;
+      if (e.target.closest(".profileModal")) return;
+
+      if (auth.authOpen) auth.closeAuth();
+      if (searchOpen) setSearchOpen(false);
+      if (profileOpen) setProfileOpen(false);
+    };
+
+    document.addEventListener("click", handle);
+    return () => document.removeEventListener("click", handle);
+  }, [searchOpen, auth, profileOpen]);
+
+  useEffect(() => {
+    if (searchOpen) setTimeout(() => searchInputRef.current?.focus(), 80);
+  }, [searchOpen]);
 
   const goToCatalog = (query) => {
-    const qParam = query ?? "";
-    navigate(`/catalog?q=${encodeURIComponent(qParam)}`);
+    navigate(`/catalog?q=${encodeURIComponent(query ?? "")}`);
     setSearchOpen(false);
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") goToCatalog(q);
+  // ✅ Este lo dejamos tal cual tu lógica original
+  const handleProfileClick = () => {
+    if (isLoggedIn) logout();
+    else auth.openAuth("login");
   };
 
-  const handleTagClick = (tag) => {
-    setQ(tag);
-    setTimeout(() => goToCatalog(tag), 0);
+  // ✅ Botón 3 líneas abre Profile (simple)
+  const handleDrawerMenuClick = () => {
+    setProfileOpen(true);
   };
 
-  const recentTags = [
-    "Chuteira Adulto",
-    "Chuteira Infantil",
-    "Meião GMA",
-    "Luva Goleiro",
-    "Calça Térmica GMA",
-    "Feminino",
-    "Masculino",
-  ];
-
-  // open auth modal
-  const openAuth = (tab = "login") => {
-    setAuthTab(tab);
-    setAuthOpen(true);
-    setSearchOpen(false);
-  };
-
-  // placeholder submit
-  const handleSubmitAuth = (e) => {
-    e.preventDefault();
-
-    // if (authTab === "register" && password !== confirmPassword) {
-    //   // TODO mostrar toast/erro
-    //   return;
-    // }
-
-    // if (authTab === "login") {
-    //   // TODO Firebase signInWithEmailAndPassword(auth, email, password)
-    // } else {
-    //   // TODO Firebase createUserWithEmailAndPassword(auth, email, password)
-    // }
-
-    alert(
-      authTab === "login"
-        ? `Login: ${email}`
-        : `Cadastrar: ${email}`
-    );
-  };
+  const userName =
+    authUser?.name ||
+    authUser?.email?.split("@")?.[0] ||
+    "";
 
   return (
     <div className="home">
+
+      {/* Toast de boas-vindas (Google) */}
+      {auth.authSuccess && (
+        <div className="cart__toast" style={{ zIndex: 9999 }}>{auth.authSuccess}</div>
+      )}
+
       {/* ===== SEARCH HEADER ===== */}
       <div className={`searchHeader ${searchOpen ? "isOpen" : ""}`}>
         <div className="searchHeader__bar">
@@ -194,22 +189,20 @@ export default function Home() {
             placeholder="Buscar..."
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            onKeyDown={handleKeyDown}
-            aria-label="Buscar productos"
+            onKeyDown={(e) => e.key === "Enter" && goToCatalog(q)}
+            aria-label="Buscar produtos"
           />
         </div>
-
         <div className="searchHeader__section">
           <div className="searchHeader__title">Mais buscados</div>
         </div>
-
         <div className="searchHeader__tags">
           {recentTags.map((t) => (
             <button
               key={t}
               type="button"
               className="tag"
-              onClick={() => handleTagClick(t)}
+              onClick={() => { setQ(t); setTimeout(() => goToCatalog(t), 0); }}
             >
               {t}
             </button>
@@ -217,6 +210,17 @@ export default function Home() {
         </div>
       </div>
 
+      {/* ===== AUTH MODAL (NO TOCADO) ===== */}
+      <AuthModal {...auth} />
+
+      
+      
+      
+      
+      
+      
+      
+      
 
 
 
@@ -224,177 +228,183 @@ export default function Home() {
 
 
 
+<div className={`profileOverlay ${profileOpen ? "isOpen" : ""}`} onClick={() => closeProfileAll()}>  
+  <div className={`profileModal ${profileOpen ? "isOpen" : ""}`} role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+    <div className="profileCard">
+
+      {/* CONTENIDO */}
+      <div className="profileCard__pad">
+
+        {/* ===== VIEW: PROFILE ===== */}
+        {profileView === "profile" && (
+          <div className="profileGrid">
+
+            {/* LEFT */}
+            <div className="profileLeft">
+              <div className="profileHello">
+                <div className="profileHello__text">
+                  Olá, {userName ? userName : "[Nome do Usuário]"}.
+                </div>
+              </div>
+
+              {/* ✅ FORM EDITABLE */}
+              <div className="profileFields">
+                <div className="profileField">
+                  <input
+                    className="profileField__input"
+                    value={profileForm.fullName}
+                    onChange={(e) => setProfileForm((p) => ({ ...p, fullName: e.target.value }))}
+                    placeholder="Nome Completo: Ex. Goku Super Saiyajin 2"
+                    aria-label="Nome completo"
+                  />
+                </div>
+
+                <div className="profileField">
+                  <input
+                    className="profileField__input"
+                    value={profileForm.email}
+                    onChange={(e) => setProfileForm((p) => ({ ...p, email: e.target.value }))}
+                    placeholder="E-mail: gokusupersaiyajin2@gmail.com"
+                    aria-label="E-mail"
+                  />
+                </div>
+
+                <div className="profileField">
+                  <input
+                    className="profileField__input"
+                    value={profileForm.phone}
+                    onChange={(e) => setProfileForm((p) => ({ ...p, phone: e.target.value }))}
+                    placeholder="Número: Ex.(**) ****-****"
+                    aria-label="Número"
+                  />
+                </div>
+
+                <div className="profileField">
+                  <input
+                    className="profileField__input"
+                    value={profileForm.cep}
+                    onChange={(e) => setProfileForm((p) => ({ ...p, cep: e.target.value }))}
+                    placeholder="Cep: Ex. *****-***"
+                    aria-label="CEP"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* RIGHT */}
+            <div className="profileRight">
+              <div className="profileRight__titleWrap">
+                <div className="profileRight__title">Minhas Compras</div>
+              </div>
 
 
 
 
 
 
+              <div className="profileRight__body">
+                <div className="profileIconsRow">
+                  {/* ✅ ICONOS = BOTONES */}
+                  <button
+                    type="button"
+                    className="iconBox iconBox--confirmed iconBoxBtn"
+                    onClick={() => openOrders("confirmed")}
+                  >
+                    <img className="iconImg iconImg--confirmed" src={check} alt="Ícone confirmado" />
+                  </button>
 
+                  <button
+                    type="button"
+                    className="iconBox iconBox--preparing iconBoxBtn"
+                    onClick={() => openOrders("preparing")}
+                  >
+                    <img className="iconImg iconImg--preparing" src={box} alt="Ícone preparando" />
+                  </button>
 
+                  <button
+                    type="button"
+                    className="iconBox iconBox--shipping iconBoxBtn"
+                    onClick={() => openOrders("shipping")}
+                  >
+                    <img className="iconImg iconImg--shipping" src={truck} alt="Ícone a caminho" />
+                  </button>
+                </div>
 
+                {/* ✅ Labels abajo, centrados, sin corte */}
+                <div className="profileLabelsRow">
+                  <div className="profileLabel">Confirmado</div>
+                  <div className="profileLabel">Preparando</div>
+                  <div className="profileLabel">A caminho</div>
+                </div>
+              </div>
+            </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-{/* ✅ AUTH MODAL (Figma) */}
-<div
-  className={`authOverlay ${authOpen ? "isOpen" : ""}`}
-  aria-hidden={!authOpen}
->
-  <div
-    className={`authModal ${authOpen ? "isOpen" : ""}`}
-    role="dialog"
-    aria-modal="true"
-    aria-label="Login / Cadastrar"
-    ref={authRef}
-  >
-    {/* tabs */}
-    <div className="authTabs">
-      <button
-        type="button"
-        className={`authTab ${authTab === "login" ? "isActive" : ""}`}
-        onClick={() => setAuthTab("login")}
-      >
-        Login
-      </button>
-
-      <button
-        type="button"
-        className={`authTab ${authTab === "register" ? "isActive" : ""}`}
-        onClick={() => setAuthTab("register")}
-      >
-        Cadastrar
-      </button>
-    </div>
-
-    {/* underline gradient */}
-    <div className="authUnderlineWrap">
-      <div
-        className={`authUnderline ${
-          authTab === "register" ? "isRegister" : "isLogin"
-        }`}
-      />
-    </div>
-
-    {/* form */}
-    <form
-      className={`authForm ${authTab === "register" ? "isRegister" : ""}`}
-      onSubmit={handleSubmitAuth}
-    >
-      <div className="authForm__inner">
-        {/* Email */}
-        <div className="authGroup">
-          <div className="authLabel">E-mail</div>
-          <div className="authInputBox">
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Digitar..."
-              aria-label="E-mail"
-            />
-          </div>
-        </div>
-
-        {/* Senha */}
-        <div className="authGroup">
-          <div className="authLabel">Senha</div>
-          <div className="authInputBox">
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="**********"
-              aria-label="Senha"
-            />
-          </div>
-        </div>
-
-        {/* ✅ Login: link "Esqueci minha senha." */}
-        {authTab === "login" && (
-          <div className="authForgotWrap">
-            <button
-              type="button"
-              className="authForgot"
-              onClick={() => {
-                // TODO: fluxo de reset (cuando haya backend)
-              }}
-            >
-              Esqueci minha senha.
-            </button>
           </div>
         )}
 
-        {/* Confirmar Senha (solo register) */}
-        {authTab === "register" && (
-          <div className="authGroup">
-            <div className="authLabel">Confirmar Senha</div>
-            <div className="authInputBox">
-              <input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="**********"
-                aria-label="Confirmar Senha"
-              />
+        {/* ===== VIEW: ORDERS ===== */}
+        {profileView === "orders" && (
+          <div className="ordersView">
+            <div className="ordersHead">
+              <div className="ordersHead__title">{ordersTitle}</div>
+              <div className="ordersHead__sub">{ordersSub}</div>
+            </div>
+
+            <div className="ordersList">
+              {ordersByTab[ordersTab].map((o) => (
+                <div key={o.id} className="orderItem">
+                  <div className="orderItem__left">
+                    {/* imagen del producto (conecta luego) */}
+                    <img className="orderItem__img" src={o.img || "https://placehold.co/87x87"} alt="" />
+                    <div className="orderItem__mid">
+                      <div className="orderItem__name">{o.title}</div>
+                      <div className="orderItem__meta">
+                        <div className="orderItem__metaText">Tam {o.size}</div>
+                        <div className="orderItem__metaText">Qnt. {o.qty}</div>
+                      </div>
+                    </div>
+
+                    <div className="orderItem__codeWrap">
+                      <div className="orderItem__code">Código do Pedido: #{o.id}</div>
+                    </div>
+                  </div>
+
+                  {/* iconito a la derecha (placeholder, lo conectas luego) */}
+                  <div className="orderItem__right">
+                    <div className="orderRightIcon">
+                      <div className="orderRightIcon__a" />
+                      <div className="orderRightIcon__b" />
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}
+
       </div>
 
-      {/* ✅ Footer (Google + submit) */}
-      <div
-        className={`authFooter ${
-          authTab === "login" ? "isLogin" : "isRegister"
-        }`}
-      >
-        {/* ✅ Google (ambos tabs, sin backend todavía) */}
-        <button
-          type="button"
-          className="authGoogleBtn"
-          onClick={() => {
-            // TODO: Google auth (cuando haya backend)
-          }}
-        >
-          <img className="authGoogleBtn__icon" src={googleIcon} alt="" />
-          <span>
-            {authTab === "login" ? "Entrar com Google" : "Cadastrar com Google"}
-          </span>
-        </button>
-
-        {/* ✅ submit principal */}
-        <button className="authSubmit" type="submit">
-          {authTab === "login" ? "Entrar" : "Criar Conta"}
-        </button>
+      {/* FOOTER BUTTONS */}
+      <div className="profileActions">
+        {profileView === "profile" ? (
+          <>
+            <button type="button" className="profileBtn profileBtn--ghost" onClick={closeProfileAll}>
+              Cancelar
+            </button>
+            <button type="button" className="profileBtn profileBtn--solid" onClick={closeProfileAll}>
+              Salvar
+            </button>
+          </>
+        ) : (
+          <button type="button" className="profileBtn profileBtn--solid profileBtn--ok" onClick={() => setProfileView("profile")}>
+            Ok
+          </button>
+        )}
       </div>
-    </form>
+
+    </div>
   </div>
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -410,142 +420,105 @@ export default function Home() {
       {/* ===== HERO ===== */}
       <section className="hero">
         <div className="hero__wrap">
-          <div className="hero__brand">po</div>
+
+          <img src={logo} alt="Logo" className="logo" />
 
           <div className="hero__copy">
-            <h1 className="hero__title">
-              GMA D’or <br />
-              Chuteira Campo
-            </h1>
+            <h1 className="hero__title">GMA D'or <br />Chuteira Campo</h1>
             <p className="hero__desc">
-              Poucos pares. Acabamento dourado exclusivo. Performance de elite. Uma
-              chuteira feita para brilhar e marcar presença dentro e fora dos gramados.
+              Poucos pares. Acabamento dourado exclusivo. Performance de elite.
+              Uma chuteira feita para brilhar e marcar presença dentro e fora dos gramados.
             </p>
           </div>
 
-          <button className="hero__cta" type="button" onClick={goToNews}>
+          <button
+            className="hero__cta"
+            type="button"
+            onClick={() => document.getElementById("novidades")?.scrollIntoView({ behavior: "smooth" })}
+          >
             Ler mais
           </button>
 
           <div className="hero__media">
-            <img src={goldenBoots} alt="GMA D’or Chuteira Campo" />
+            <img src={goldenBoots} alt="GMA D'or Chuteira Campo" />
           </div>
 
-          {/* ===== Drawer vertical ===== */}
+          {/* Drawer — ícone de perfil fica verde quando logado */}
           <nav className="drawer" aria-label="Ações rápidas">
-            <button className="drawer__btn" type="button" aria-label="Menu">
+            {/* ✅ AHORA: el botón de 3 líneas abre el Profile */}
+            <button className="drawer__btn" type="button" aria-label="Perfil" onClick={handleDrawerMenuClick}>
               <img src={drawerIcon} alt="" />
             </button>
 
+            {/* este se queda como lo tenías (login/logout) */}
             <button
               className="drawer__btn"
               type="button"
-              aria-label="Perfil"
-              onClick={() => openAuth("login")}
+              aria-label={isLoggedIn ? `Sair (${authUser?.name ?? ""})` : "Entrar"}
+              title={isLoggedIn ? `Clique para sair (${authUser?.name ?? authUser?.email ?? ""})` : "Entrar / Cadastrar"}
+              onClick={handleProfileClick}
             >
-              <img src={profileIcon} alt="" />
+              <img
+                src={profileIcon}
+                alt=""
+                style={isLoggedIn ? { filter: "invert(35%) sepia(80%) saturate(400%) hue-rotate(100deg)" } : {}}
+              />
             </button>
 
             <Link className="drawer__btn" to="/cart" aria-label="Carrinho">
               <img src={cartIcon} alt="" />
             </Link>
 
-            <button
-              className="drawer__btn"
-              type="button"
-              aria-label="Buscar"
-              onClick={toggleSearch}
-            >
+            <button className="drawer__btn" type="button" aria-label="Buscar" onClick={() => setSearchOpen((p) => !p)}>
               <img src={searchIcon} alt="" />
             </button>
           </nav>
+
         </div>
       </section>
 
       {/* ===== BENEFITS ===== */}
       <section className="benefits">
         <div className="benefits__row">
-          <div className="benefits__item">
-            <strong>FRETE GRÁTIS</strong> para compras acima de <strong>R$ 200!</strong>
-          </div>
-          <div className="benefits__item">
-            <strong>Envio rápido</strong> para todo o <strong>Brasil!</strong>
-          </div>
-          <div className="benefits__item">
-            <strong>20% OFF</strong> na sua primeira <strong>compra!</strong>
-          </div>
+          <div className="benefits__item"><strong>FRETE GRÁTIS</strong> para compras acima de <strong>R$ 200!</strong></div>
+          <div className="benefits__item"><strong>Envio rápido</strong> para todo o <strong>Brasil!</strong></div>
+          <div className="benefits__item"><strong>20% OFF</strong> na sua primeira <strong>compra!</strong></div>
         </div>
       </section>
 
-      {/* ===== NOVIDADES HEAD ===== */}
+      {/* ===== NOVIDADES ===== */}
       <section className="newsHead" id="novidades">
         <h2 className="newsHead__title">Novidades</h2>
         <p className="newsHead__sub">Confira já!</p>
       </section>
 
-
-
-
-
-
-
-
-
-
-{/* ===== GRID ===== */}
-<section className="grid">
-  {loading ? (
-    <div className="grid__loading">Carregando produtos...</div>
-  ) : (
-    <div className="grid__rows">
-      <div className="grid__row">
-        {gridItems.slice(0, 4).map((p) => (
-          <Link key={p.id} to={`/produto/${p.id}`} className="card">
-            <img className="card__img" src={p.image} alt={p.title} loading="lazy" />
-
-            <div className="card__text">
-              <div className="card__nameWrap">
-                <div className="card__name">{p.title}</div>
-              </div>
-
-              <div className="card__price">R$ {p.price.toFixed(2)}</div>
-
-
-
-              {/* Figma: fila con 5 “íconos” */}
-              <div className="card__icons">
-                {Array.from({ length: 5 }).map((_, i) => {
-                  const rating = Math.round(p.rating?.rate || 0);
-                  return (
-                    <span
-                      key={i}
-                      className={`card__star ${i < rating ? "isFilled" : ""}`}
-                    >
-                      ★
-                    </span>
-                  );
-                })}
-              </div>
-
-
+      {/* ===== GRID ===== */}
+      <section className="grid">
+        {loading ? (
+          <div className="grid__loading">Carregando produtos...</div>
+        ) : (
+          <div className="grid__rows">
+            <div className="grid__row">
+              {filtered.slice(0, 4).map((p) => (
+                <Link key={p.id} to={`/produto/${p.id}`} className="card">
+                  <img className="card__img" src={p.image} alt={p.title} loading="lazy" />
+                  <div className="card__text">
+                    <div className="card__nameWrap">
+                      <div className="card__name">{p.title}</div>
+                    </div>
+                    <div className="card__price">R$ {p.price.toFixed(2)}</div>
+                    <div className="card__icons">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <span key={i} className={`card__star ${i < Math.round(p.rating?.rate ?? 0) ? "isFilled" : ""}`}>★</span>
+                      ))}
+                    </div>
+                  </div>
+                </Link>
+              ))}
             </div>
-          </Link>
-        ))}
-      </div>
-    </div>
-  )}
-</section>
-
-
-
-
-
-
-
-
-
-
-
+          </div>
+        )}
+      </section>
 
       {/* ===== BANNER ===== */}
       <section className="banner">
