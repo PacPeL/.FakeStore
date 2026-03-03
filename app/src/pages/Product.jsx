@@ -32,21 +32,21 @@ export default function Product() {
   const { addToCart, isLoggedIn, logout, authUser } = useStore();
   const auth    = useAuthModal();
 
-  const [p, setP]           = useState(null);
+  const [p, setP]             = useState(null);
   const [loading, setLoading] = useState(true);
-  const [size, setSize]     = useState(null);
+  const [size, setSize]       = useState(null);
 
   const [q, setQ]                   = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
   const searchInputRef              = useRef(null);
 
-  const [reviews, setReviews]       = useState([]);
-  const [myRating, setMyRating]     = useState(0);
-  const [hoverRating, setHoverRating] = useState(0);
-  const [myComment, setMyComment]   = useState("");
+  const [reviews, setReviews]             = useState([]);
+  const [myRating, setMyRating]           = useState(0);
+  const [hoverRating, setHoverRating]     = useState(0);
+  const [myComment, setMyComment]         = useState("");
   const [reviewLoading, setReviewLoading] = useState(false);
-  const [reviewMsg, setReviewMsg]   = useState("");
-  const [reviewError, setReviewError] = useState("");
+  const [reviewMsg, setReviewMsg]         = useState("");
+  const [reviewError, setReviewError]     = useState("");
 
   const recentTags = [
     "Chuteira", "Tênis", "Bola",
@@ -127,6 +127,14 @@ export default function Product() {
     else auth.openAuth("login");
   };
 
+  // ✅ GUARD: solo deja comprar/agregar si está logeado (sin tocar markup/clases)
+  const requireAuth = () => {
+    if (isLoggedIn) return true;
+    window.alert("Você precisa estar logado para comprar ou adicionar ao carrinho.");
+    auth.openAuth("login"); // abre el modal
+    return false;
+  };
+
   const handleSubmitReview = async (e) => {
     e.preventDefault();
     if (!isLoggedIn) { auth.openAuth("login"); return; }
@@ -204,10 +212,9 @@ export default function Product() {
 
       {/* ===== HERO ===== */}
       <section className="pHero">
-                <img src={logo} alt="Logo" className="logo" />
+        <img src={logo} alt="Logo" className="logo" />
 
         <div className="pHero__wrap">
-
 
           <h1 className="pTitle">{p.title}</h1>
 
@@ -262,13 +269,14 @@ export default function Product() {
             </div>
 
             <div className="pBuyRow">
-
-
-
               <button
                 className="pBuy"
                 type="button"
-                onClick={() => { addToCart({ ...p, size }); nav("/cart"); }}>
+                onClick={() => {
+                  if (!requireAuth()) return; // ✅ filtro
+                  addToCart({ ...p, size });
+                  nav("/cart");
+                }}>
                 Comprar
               </button>
 
@@ -276,6 +284,7 @@ export default function Product() {
                 className="pBuyCart"
                 type="button"
                 onClick={() => {
+                  if (!requireAuth()) return; // ✅ filtro
                   addToCart({ ...p, size });
                   window.alert("Produto adicionado ao carrinho!");
                 }}
@@ -283,10 +292,6 @@ export default function Product() {
               >
                 <img src={cartIcon} alt="" />
               </button>
-
-
-
-
             </div>
           </div>
 
@@ -340,19 +345,17 @@ export default function Product() {
           <div className="pReviews__title">Avaliações:</div>
           <div className="pReviews__sub">O que os clientes estão dizendo sobre o produto?</div>
 
-          {/* ── Formulário de avaliação ── */}
           <div className="reviewForm">
             {!isLoggedIn ? (
               <div className="reviewForm__login">
                 <span>Faça </span>
-                <button type="button" className="reviewForm__loginLink"
-
-
-
-                  onClick={() => auth.openAuth("login")}>login</button>
-
-
-
+                <button
+                  type="button"
+                  className="reviewForm__loginLink"
+                  onClick={() => auth.openAuth("login")}
+                >
+                  login
+                </button>
                 <span> para avaliar este produto.</span>
               </div>
             ) : (
@@ -401,7 +404,6 @@ export default function Product() {
             )}
           </div>
 
-          {/* ── Lista de avaliações ── */}
           {reviews.length === 0 ? (
             <div className="pReviews__empty">
               Ainda não há avaliações. Seja o primeiro a avaliar!
