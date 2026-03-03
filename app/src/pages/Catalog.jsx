@@ -38,8 +38,8 @@ export default function Catalog() {
   const sortRef                         = useRef(null);
 
   const recentTags = [
-    "Chuteira Adulto", "Chuteira Infantil", "Meião GMA",
-    "Luva Goleiro", "Calça Térmica GMA", "Feminino", "Masculino",
+    "Chuteira", "Tênis", "Bola",
+    "Luva", "Calça", "Shorts",
   ];
 
   useEffect(() => {
@@ -161,9 +161,7 @@ export default function Catalog() {
       {/* ===== HERO ===== */}
       <section className="catalogHero">
         <div className="catalogHero__wrap">
-          <div className="catalogHero__brand">
-            <img src={logo} alt="Logo" className="logo" />
-          </div>
+          <img src={logo} alt="Logo" className="logo" />
 
           <nav className="drawer" aria-label="Ações rápidas">
             <button className="drawer__btn" type="button" aria-label="Menu">

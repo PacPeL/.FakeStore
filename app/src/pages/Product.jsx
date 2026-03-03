@@ -48,8 +48,8 @@ export default function Product() {
   const [reviewError, setReviewError] = useState("");
 
   const recentTags = [
-    "Chuteira Adulto", "Chuteira Infantil", "Meião GMA",
-    "Luva Goleiro", "Calça Térmica GMA", "Feminino", "Masculino",
+    "Chuteira", "Tênis", "Bola",
+    "Luva", "Calça", "Shorts",
   ];
 
   useEffect(() => {
@@ -204,7 +204,8 @@ export default function Product() {
       {/* ===== HERO ===== */}
       <section className="pHero">
         <div className="pHero__wrap">
-          <div className="pHero__brand">****************</div>
+        <img src={logo} alt="Logo" className="logo" />
+
 
           <h1 className="pTitle">{p.title}</h1>
 

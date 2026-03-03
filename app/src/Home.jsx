@@ -76,8 +76,8 @@ export default function Home() {
   const userName = authUser?.name || authUser?.email?.split("@")?.[0] || "";
 
   const recentTags = [
-    "Chuteira Adulto", "Chuteira Infantil", "Meião GMA",
-    "Luva Goleiro", "Calça Térmica GMA", "Feminino", "Masculino",
+    "Chuteira", "Tênis", "Bola",
+    "Luva", "Calça", "Shorts",
   ];
 
   useEffect(() => {

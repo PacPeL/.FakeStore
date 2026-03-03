@@ -36,8 +36,8 @@ export default function Cart() {
   const navigate                    = useNavigate();
 
   const recentTags = [
-    "Chuteira Adulto", "Chuteira Infantil", "Meião GMA",
-    "Luva Goleiro", "Calça Térmica GMA", "Feminino", "Masculino",
+    "Chuteira", "Tênis", "Bola",
+    "Luva", "Calça", "Shorts",
   ];
 
   const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(""), 4000); };
