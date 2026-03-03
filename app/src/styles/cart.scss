@@ -34,7 +34,6 @@
 
 /* ===== Drawer como columna derecha (sin mover markup) ===== */
 .drawer {
-  /* ya no absoluto: ahora es columna derecha */
   position: static;
   order: 3;
 
@@ -65,11 +64,12 @@
 
   width: 100%;
   display: flex;
-  align-items: center;
+  align-items: flex-start; /* antes center */
   justify-content: center;
   gap: 30px;
 
-  margin: 100px;
+  margin: 0;              /* antes 100px */
+  margin-top: 240px;      /* deja espacio bajo el título */
   padding: 0;
 }
 
@@ -101,7 +101,6 @@
   display: flex;
   align-items: center;
 
-  /* Figma: padding-right 100, gap 26 */
   padding-right: 100px;
   padding-left: 0;
   gap: 26px;
@@ -200,7 +199,7 @@
   color: #000;
 }
 
-/* Precio: 36, Numans, underline solo número (lo simulamos) */
+/* Precio item (lista): subrayado */
 .cartItem__price {
   width: 220px;
   height: 100%;
@@ -218,13 +217,12 @@
   white-space: nowrap;
   padding-right: 0;
 
-  /* look underline */
   text-decoration: underline;
   text-decoration-thickness: 2px;
   text-underline-offset: 6px;
 }
 
-/* ===== RESUMO (como Figma) ===== */
+/* ===== RESUMO ===== */
 .cartSummary {
   width: 441px;
   background: #fff;
@@ -235,11 +233,9 @@
   flex-direction: column;
 }
 
-/* Top: height 241, padding 50 */
+/* Top: height auto para que entren varias filas */
 .cartSummary__top {
-  height: 241px;
   padding: 50px;
-
   display: flex;
   justify-content: flex-start;
   align-items: flex-start;
@@ -256,10 +252,17 @@
   font-weight: 400;
   color: #000;
 
-  margin-bottom: 92px; /* gap grande como figma */
+  margin-bottom: 26px; /* antes 92 (era demasiado para varias filas) */
 }
 
-/* Fila “X Item(s)” + subtotal */
+/* ✅ Contenedor de filas */
+.cartSummary__items{
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Fila Items(qty) + unit price */
 .cartSummary__itemRow {
   width: 100%;
   display: flex;
@@ -268,7 +271,6 @@
   gap: 16px;
 }
 
-/* “3 Item(s)” */
 .cartSummary__itemQty {
   font-family: "Numans", system-ui;
   font-size: 20px;
@@ -276,7 +278,6 @@
   color: #000;
 }
 
-/* “R$ 709,99” subrayado */
 .cartSummary__itemPrice {
   font-family: "Numans", system-ui;
   font-size: 20px;
@@ -290,13 +291,12 @@
   text-underline-offset: 4px;
 }
 
-/* Por si queda renderizado, lo escondemos como tu diseño anterior */
+/* lo ocultamos como ya venías */
 .cartSummary__right,
 .cartSummary__value {
   display: none !important;
 }
 
-/* Divider: width 441-ish, height 4 */
 .cartSummary__divider {
   width: calc(100% - 0px);
   height: 4px;
@@ -305,7 +305,6 @@
   margin: 0 auto;
 }
 
-/* Body: padding top/bottom 80, gap 60, centrado */
 .cartSummary__body {
   padding: 80px 50px;
   display: flex;
@@ -314,7 +313,6 @@
   gap: 60px;
 }
 
-/* Total row: gap 87 */
 .cartSummary__totalRow {
   width: 100%;
   display: flex;
@@ -357,7 +355,6 @@
   text-decoration-thickness: 2px;
 }
 
-/* Button: height 62, radius 20, padding 77 */
 .cartSummary__checkout {
   width: 100%;
   height: 62px;
@@ -466,6 +463,7 @@
     flex-direction: column;
     align-items: stretch;
     gap: 18px;
+    margin-top: 120px; /* menos espacio en mobile */
   }
 
   .cartList {
@@ -503,14 +501,6 @@
     width: 100%;
   }
 
-  .cartSummary__top {
-    height: auto;
-  }
-
-  .cartSummary__title {
-    margin-bottom: 24px;
-  }
-
   .cartSummary__body {
     padding: 32px 18px;
     gap: 18px;
@@ -520,4 +510,29 @@
   .cartSummary__totalValue {
     font-size: 22px;
   }
+}
+
+/* ===== TITLE ===== */
+.cartTitle{
+  position: absolute;
+  left: 50%;
+  top: 80px; /* ✅ subido (antes 180) */
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 2;
+}
+
+.cartTitle__text{
+  color: #818181;
+  font-family: "Montserrat", system-ui;
+  font-size: 48px;
+  font-weight: 900;
+}
+
+.cartTitle__icon{
+  width: 51px;
+  height: 51px;
+  opacity: 0.7;
 }

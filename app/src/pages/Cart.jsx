@@ -82,10 +82,16 @@ export default function Cart() {
     else auth.openAuth("login");
   };
 
-  // ✅ Total de itens (suma qty) para “X Item(s)” como en Figma
-  const itemsCount = useMemo(() => {
-    return cart.reduce((acc, x) => acc + (Number(x.qty) || 0), 0);
+  // ✅ Total real (price * qty) pro TOTAL final
+  const totalReal = useMemo(() => {
+    return cart.reduce((acc, x) => {
+      const price = Number(x.price) || 0;
+      const qty = Number(x.qty) || 0;
+      return acc + price * qty;
+    }, 0);
   }, [cart]);
+
+  const totalToShow = Number.isFinite(cartTotal) && cartTotal >= 0 ? cartTotal : totalReal;
 
   return (
     <div className="cart">
@@ -150,10 +156,6 @@ export default function Cart() {
               />
             </button>
 
-            <Link className="drawer__btn" to="/cart" aria-label="Carrinho">
-              <img src={cartIcon} alt="" />
-            </Link>
-
             <button
               className="drawer__btn"
               type="button"
@@ -163,6 +165,12 @@ export default function Cart() {
               <img src={searchIcon} alt="" />
             </button>
           </nav>
+
+          {/* ✅ TÍTULO CENTRAL */}
+          <div className="cartTitle" aria-label="Título do carrinho">
+            <div className="cartTitle__text">Meu Carrinho</div>
+            <img className="cartTitle__icon" src={cartIcon} alt="" aria-hidden="true" />
+          </div>
 
           {!cart.length ? (
             <div className="cartEmpty">
@@ -175,7 +183,7 @@ export default function Cart() {
                 {cart.map((x) => {
                   const sizes = x.sizes ?? [];
                   return (
-                    <div key={`${x.id}-${x.size}`} className="cartItem">
+                    <div key={`${x.id}-${x.size ?? "nosize"}`} className="cartItem">
                       <div className="cartItem__inner">
                         <img className="cartItem__img" src={x.image} alt={x.title} />
 
@@ -222,8 +230,9 @@ export default function Cart() {
                           </div>
                         </div>
 
+                        {/* precio del item en la lista: TOTAL por producto (como ya lo tenías) */}
                         <div className="cartItem__price">
-                          R$ {(x.price * x.qty).toFixed(2)}
+                          R$ {(Number(x.price || 0) * Number(x.qty || 0)).toFixed(2)}
                         </div>
                       </div>
                     </div>
@@ -236,15 +245,23 @@ export default function Cart() {
                   <div className="cartSummary__left">
                     <div className="cartSummary__title">Resumo</div>
 
-                    {/* ✅ como Figma: solo 1 línea "X Item(s)" */}
-                    <div className="cartSummary__itemRow">
-                      <div className="cartSummary__itemQty">{itemsCount} Item(s)</div>
-                      <div className="cartSummary__itemPrice">R$ {cartTotal.toFixed(2)}</div>
+                    {/* ✅ AHORA: filas separadas, NO conjunto */}
+                    <div className="cartSummary__items">
+                      {cart.map((x) => (
+                        <div className="cartSummary__itemRow" key={`sum-${x.id}-${x.size ?? "nosize"}`}>
+                          <div className="cartSummary__itemQty">Items ({Number(x.qty) || 0})</div>
+
+                          {/* ✅ precio unitario (NO total) */}
+                          <div className="cartSummary__itemPrice">
+                            R$ {(Number(x.price) || 0).toFixed(2)}
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
 
                   <div className="cartSummary__right">
-                    <div className="cartSummary__value">R$ {cartTotal.toFixed(2)}</div>
+                    <div className="cartSummary__value">R$ {totalToShow.toFixed(2)}</div>
                   </div>
                 </div>
 
@@ -255,7 +272,7 @@ export default function Cart() {
                     <div className="cartSummary__label">Total</div>
                     <div className="cartSummary__totalValue">
                       <span className="cartSummary__currency">R$</span>
-                      <span className="cartSummary__totalUnderline">{cartTotal.toFixed(2)}</span>
+                      <span className="cartSummary__totalUnderline">{totalToShow.toFixed(2)}</span>
                     </div>
                   </div>
 
