@@ -260,6 +260,12 @@
   line-height: 1;
 }
 
+
+
+
+
+
+
 /* ===== STARS (nuevo) =====
    No cambia clases, solo define estilo.
    Figma: 5 íconos, centrados, con “paddings” por estrella
@@ -272,25 +278,38 @@
   width: 100%;
 }
 
-/* cada estrella como “chip” invisible con padding */
+/* estrella vacía: blanca + borde negro */
 .card__star {
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
   padding: 5px 4px;
-  font-size: 22px; /* visual cercano al icono figma 24x22 */
+  font-size: 22px;
   line-height: 1;
 
-  color: #000;
-  opacity: 0.18; /* apagada */
+  color: #fff; /* ⭐ vacía blanca */
+  opacity: 1;
+
+  /* borde negro alrededor del caracter ★ */
+  -webkit-text-stroke: 1.6px #000;
+  text-stroke: 1.6px #000; /* fallback (no siempre aplica) */
+
   transform: translateZ(0);
 }
 
-/* estrella activa */
+/* estrella llena: negra sólida (sin borde) */
 .card__star.isFilled {
-  opacity: 1;
+  color: #000;
+  -webkit-text-stroke: 1.6px #000;
+  text-stroke: 1.6px #000; /* fallback (no siempre aplica) */
 }
+
+
+
+
+
+
 
 /* ===== FOOTER BAR ===== */
 .footerbar {

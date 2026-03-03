@@ -84,28 +84,40 @@
 
 /* tus estrellas son texto "★", las llevamos al tamaño visual del figma */
 .pStar {
-  font-size: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 5px 4px;
+  font-size: 22px;
   line-height: 1;
-  color: #000;
+
+  color: #fff; /* ⭐ vacía blanca */
   opacity: 1;
 
-  /* Figma tiene padding alrededor del ícono */
-  padding: 5px 4px;
+  /* borde negro alrededor del caracter ★ */
+  -webkit-text-stroke: 1.6px #000;
+  text-stroke: 1.6px #000; /* fallback (no siempre aplica) */
+
+  transform: translateZ(0);
 }
 
 .pStar.isFilled {
-  opacity: 1;
+  color: #000;
+  -webkit-text-stroke: 1.6px #000;
+  text-stroke: 1.6px #000; /* fallback (no siempre aplica) */
 }
 
-.pStar.isHalf {
-  opacity: 0.7;
-}
+
+
+
 
 .pRating__text {
   /* Figma: width 330 con padding 10 */
   width: 330px;
   padding: 10px;
 
+  margin-left: -10px;
   font-size: 16px;
   font-weight: 400;
   color: #000;
