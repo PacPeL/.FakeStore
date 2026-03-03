@@ -248,7 +248,7 @@ export default function Product() {
           <div className="pPrice">
             <div className="pPrice__from">
               <span className="pPrice__fromLabel">de</span>{" "}
-              <span className="pPrice__fromValueR">R$</span> <span className="pPrice__fromValue">{(originalPrice)}</span>{" "}
+              <span className="pPrice__fromValueR">R$</span> <span className="pPrice__fromValue">{(originalPrice).toFixed(2)}</span>{" "}
               <span className="pPrice__fromLabel">por apenas</span>
             </div>
             <div className="pPrice__pix">

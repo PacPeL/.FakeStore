@@ -97,13 +97,13 @@
   color: #000;
 }
 
-/* NEW: arrow image (Vector.svg) */
+/* arrow image (Vector.svg) */
 .catalogControls__arrow {
   width: 15.38px;
   height: 9.06px;
   display: block;
 
-  transform: rotate(90deg); /* mismo “feeling” que tenías antes */
+  transform: rotate(90deg);
   transform-origin: center;
   transition: transform 0.18s ease;
 }
@@ -190,10 +190,14 @@
   padding: 0 40px;
 }
 
-/* ===== CARD (igual HOME) ===== */
+/* ===== CARD (ajustada a Figma) =====
+   Figma: width 301, height 457, padding 25, gap 10
+   Imagen: 251 x 232 (stretch)
+   Texto: padding-top 10, padding-bottom 25, gap 15
+*/
 .card {
-  width: 316px;
-  height: 480px;
+  width: 301px;
+  height: 457px;
   padding: 25px;
   background: #fff;
   border-radius: 20px;
@@ -208,46 +212,84 @@
 }
 
 .card__img {
-  width: 266px;
-  height: 255px;
+  width: 251px;
+  height: 232px;
   border-radius: 20px;
   align-self: center;
   object-fit: contain;
 }
 
+/* bloque texto como figma */
 .card__text {
+  width: 100%;
   height: 165px;
-  padding-top: 25px;
+  padding-top: 10px;
   padding-bottom: 25px;
 
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 15px;
   align-items: center;
   justify-content: flex-start;
 }
 
+/* nombre: figma usa 20 y letterSpacing 2, centrado */
 .card__name {
-  width: 266px;
-  height: 38px;
+  width: 192px;
   text-align: center;
 
   font-family: "Montserrat", system-ui, -apple-system, Segoe UI, Roboto, Arial;
-  font-size: 32px;
+  font-size: 20px;
   font-weight: 500;
+  letter-spacing: 2px;
 
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+/* precio: figma 36 (Numans). Si no tienes Numans cargada, cae a Montserrat */
 .card__price {
   width: 206px;
   text-align: center;
 
-  font-family: "Montserrat", system-ui, -apple-system, Segoe UI, Roboto, Arial;
-  font-size: 40px;
-  font-weight: 700;
+  font-family: "Numans", "Montserrat", system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  font-size: 36px;
+  font-weight: 400;
+
+  line-height: 1;
+}
+
+/* ===== STARS (nuevo) =====
+   No cambia clases, solo define estilo.
+   Figma: 5 íconos, centrados, con “paddings” por estrella
+*/
+.card__stars {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+}
+
+/* cada estrella como “chip” invisible con padding */
+.card__star {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 5px 4px;
+  font-size: 22px; /* visual cercano al icono figma 24x22 */
+  line-height: 1;
+
+  color: #000;
+  opacity: 0.18; /* apagada */
+  transform: translateZ(0);
+}
+
+/* estrella activa */
+.card__star.isFilled {
+  opacity: 1;
 }
 
 /* ===== FOOTER BAR ===== */
@@ -450,4 +492,4 @@
   .catalogBody {
     padding: 20px 18px 30px;
   }
-} 
+}

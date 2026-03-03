@@ -17,7 +17,6 @@ import searchIcon  from "../assets/icon.svg";
 import vectorArrow from "../assets/Vector.svg";
 import logo  from "../assets/logo.svg";
 
-
 export default function Catalog() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading]   = useState(true);
@@ -139,19 +138,30 @@ export default function Catalog() {
       <div className={`searchHeader ${searchOpen ? "isOpen" : ""}`}>
         <div className="searchHeader__bar">
           <img src={searchIcon} alt="" className="searchHeader__icon" />
-          <input ref={searchInputRef} className="searchHeader__input" type="text"
-            placeholder="Buscar..." value={q}
+          <input
+            ref={searchInputRef}
+            className="searchHeader__input"
+            type="text"
+            placeholder="Buscar..."
+            value={q}
             onChange={(e) => setQ(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && goToCatalog(q)}
-            aria-label="Buscar produtos" />
+            aria-label="Buscar produtos"
+          />
         </div>
         <div className="searchHeader__section">
           <div className="searchHeader__title">Mais buscados</div>
         </div>
         <div className="searchHeader__tags">
           {recentTags.map((t) => (
-            <button key={t} type="button" className="tag"
-              onClick={() => { setQ(t); setTimeout(() => goToCatalog(t), 0); }}>{t}</button>
+            <button
+              key={t}
+              type="button"
+              className="tag"
+              onClick={() => { setQ(t); setTimeout(() => goToCatalog(t), 0); }}
+            >
+              {t}
+            </button>
           ))}
         </div>
       </div>
@@ -168,18 +178,31 @@ export default function Catalog() {
             <Link className="drawer__btn" to="/" aria-label="Home">
               <img src={home} alt="" />
             </Link>
-            <button className="drawer__btn" type="button"
+
+            <button
+              className="drawer__btn"
+              type="button"
               aria-label={isLoggedIn ? "Sair" : "Entrar"}
               title={isLoggedIn ? `Clique para sair (${authUser?.name ?? authUser?.email ?? ""})` : "Entrar / Cadastrar"}
-              onClick={handleProfileClick}>
-              <img src={profileIcon} alt=""
-                style={isLoggedIn ? { filter: "invert(35%) sepia(80%) saturate(400%) hue-rotate(100deg)" } : {}} />
+              onClick={handleProfileClick}
+            >
+              <img
+                src={profileIcon}
+                alt=""
+                style={isLoggedIn ? { filter: "invert(35%) sepia(80%) saturate(400%) hue-rotate(100deg)" } : {}}
+              />
             </button>
+
             <Link className="drawer__btn" to="/cart" aria-label="Carrinho">
               <img src={cartIcon} alt="" />
             </Link>
-            <button className="drawer__btn" type="button" aria-label="Buscar"
-              onClick={() => setSearchOpen((p) => !p)}>
+
+            <button
+              className="drawer__btn"
+              type="button"
+              aria-label="Buscar"
+              onClick={() => setSearchOpen((p) => !p)}
+            >
               <img src={searchIcon} alt="" />
             </button>
           </nav>
@@ -191,36 +214,60 @@ export default function Catalog() {
 
           <div className="catalogControls">
             <div className="catalogControls__group" ref={filterRef}>
-              <button type="button"
+              <button
+                type="button"
                 className={`catalogControls__btn ${filterOpen ? "isOpen" : ""}`}
-                onClick={() => { setFilterOpen((v) => !v); setSortOpen(false); auth.closeAuth(); }}>
+                onClick={() => { setFilterOpen((v) => !v); setSortOpen(false); auth.closeAuth(); }}
+              >
                 <span>Filtrar por</span>
-                <img src={vectorArrow} alt="" className={`catalogControls__arrow ${filterOpen ? "isOpen" : ""}`} />
+                <img
+                  src={vectorArrow}
+                  alt=""
+                  className={`catalogControls__arrow ${filterOpen ? "isOpen" : ""}`}
+                />
               </button>
+
               {filterOpen && (
                 <div className="catalogControls__menu">
                   {categories.map((c) => (
-                    <button key={c} type="button"
+                    <button
+                      key={c}
+                      type="button"
                       className={`catalogControls__item ${activeCategory === c ? "isActive" : ""}`}
-                      onClick={() => { setActiveCategory(c); setFilterOpen(false); }}>{c}</button>
+                      onClick={() => { setActiveCategory(c); setFilterOpen(false); }}
+                    >
+                      {c}
+                    </button>
                   ))}
                 </div>
               )}
             </div>
 
             <div className="catalogControls__group" ref={sortRef}>
-              <button type="button"
+              <button
+                type="button"
                 className={`catalogControls__btn ${sortOpen ? "isOpen" : ""}`}
-                onClick={() => { setSortOpen((v) => !v); setFilterOpen(false); auth.closeAuth(); }}>
+                onClick={() => { setSortOpen((v) => !v); setFilterOpen(false); auth.closeAuth(); }}
+              >
                 <span>Ordenar por</span>
-                <img src={vectorArrow} alt="" className={`catalogControls__arrow ${sortOpen ? "isOpen" : ""}`} />
+                <img
+                  src={vectorArrow}
+                  alt=""
+                  className={`catalogControls__arrow ${sortOpen ? "isOpen" : ""}`}
+                />
               </button>
+
               {sortOpen && (
                 <div className="catalogControls__menu">
                   {["Relevância", "Menor preço", "Maior preço", "A-Z", "Z-A"].map((s) => (
-                    <button key={s} type="button"
+                    <button
+                      key={s}
+                      type="button"
                       className={`catalogControls__item ${sortBy === s ? "isActive" : ""}`}
-                      onClick={() => { setSortBy(s); setSortOpen(false); }}>{s}</button>
+                      onClick={() => { setSortBy(s); setSortOpen(false); }}
+                    >
+                      {s}
+                    </button>
                   ))}
                 </div>
               )}
@@ -231,9 +278,26 @@ export default function Catalog() {
             {firstRow.map((p) => (
               <Link key={p.id} to={`/produto/${p.id}`} className="card">
                 <img className="card__img" src={p.image} alt={p.title} loading="lazy" />
+
                 <div className="card__text">
                   <div className="card__name">{p.title}</div>
                   <div className="card__price">R$ {p.price.toFixed(2)}</div>
+
+                  <div className="card__stars" aria-label={`Avaliação ${p?.rating?.rate ?? 0} de 5`}>
+                    {Array.from({ length: 5 }).map((_, i) => {
+                      const rate = Number(p?.rating?.rate ?? 0);
+                      const isFilled = rate >= i + 1;
+                      return (
+                        <span
+                          key={i}
+                          className={`card__star ${isFilled ? "isFilled" : ""}`}
+                          aria-hidden="true"
+                        >
+                          ★
+                        </span>
+                      );
+                    })}
+                  </div>
                 </div>
               </Link>
             ))}
@@ -247,9 +311,27 @@ export default function Catalog() {
             {row.map((p) => (
               <Link key={p.id} to={`/produto/${p.id}`} className="card">
                 <img className="card__img" src={p.image} alt={p.title} loading="lazy" />
+
                 <div className="card__text">
                   <div className="card__name">{p.title}</div>
                   <div className="card__price">R$ {p.price.toFixed(2)}</div>
+
+                  {/* ✅ MISMO BLOQUE DE ESTRELAS AQUI TAMBIÉM */}
+                  <div className="card__stars" aria-label={`Avaliação ${p?.rating?.rate ?? 0} de 5`}>
+                    {Array.from({ length: 5 }).map((_, i) => {
+                      const rate = Number(p?.rating?.rate ?? 0);
+                      const isFilled = rate >= i + 1;
+                      return (
+                        <span
+                          key={i}
+                          className={`card__star ${isFilled ? "isFilled" : ""}`}
+                          aria-hidden="true"
+                        >
+                          ★
+                        </span>
+                      );
+                    })}
+                  </div>
                 </div>
               </Link>
             ))}
