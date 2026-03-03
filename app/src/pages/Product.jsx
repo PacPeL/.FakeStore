@@ -261,15 +261,31 @@ export default function Product() {
             </div>
 
             <div className="pBuyRow">
-              <button className="pBuy" type="button"
+
+
+
+              <button
+                className="pBuy"
+                type="button"
                 onClick={() => { addToCart({ ...p, size }); nav("/cart"); }}>
                 Comprar
               </button>
-              <button className="pBuyCart" type="button"
-                onClick={() => { addToCart({ ...p, size }); }}
-                aria-label="Adicionar ao carrinho">
+
+              <button
+                className="pBuyCart"
+                type="button"
+                onClick={() => {
+                  addToCart({ ...p, size });
+                  window.alert("Produto adicionado ao carrinho!");
+                }}
+                aria-label="Adicionar ao carrinho"
+              >
                 <img src={cartIcon} alt="" />
               </button>
+
+
+
+
             </div>
           </div>
 
