@@ -232,7 +232,7 @@ export default function Cart() {
 
                         {/* precio del item en la lista: TOTAL por producto (como ya lo tenías) */}
                         <div className="cartItem__price">
-                          R$ {(Number(x.price || 0) * Number(x.qty || 0)).toFixed(2)}
+                            <span className="pPrice__pixRS">R$</span>{(Number(x.price || 0) * Number(x.qty || 0)).toFixed(2)}
                         </div>
                       </div>
                     </div>
