@@ -8,6 +8,7 @@ import "../styles/product.scss";
 import "../styles/auth.scss";
 import "../styles/logo.scss";
 
+import home from "../assets/home.svg";
 
 import drawerIcon  from "../assets/drawer_icon.svg";
 import profileIcon from "../assets/iconamoon_profile-light.svg";
@@ -278,9 +279,9 @@ export default function Product() {
 
           {/* Drawer */}
           <nav className="drawer" aria-label="Ações rápidas">
-            <button className="drawer__btn" type="button" aria-label="Menu">
-              <img src={drawerIcon} alt="" />
-            </button>
+            <Link className="drawer__btn" to="/" aria-label="Home">
+              <img src={home} alt="" />
+            </Link>
             <button className="drawer__btn" type="button"
               aria-label={isLoggedIn ? "Sair" : "Entrar"}
               title={isLoggedIn ? `Clique para sair (${authUser?.name ?? authUser?.email ?? ""})` : "Entrar / Cadastrar"}

@@ -7,6 +7,8 @@ import "../styles/cart.scss";
 import "../styles/auth.scss";
 import "../styles/logo.scss";
 
+import home from "../assets/home.svg";
+
 import drawerIcon  from "../assets/drawer_icon.svg";
 import profileIcon from "../assets/iconamoon_profile-light.svg";
 import cartIcon    from "../assets/lineicons_cart-1.svg";
@@ -130,9 +132,9 @@ export default function Cart() {
         <div className="cartHero__wrap">
 
           <nav className="drawer" aria-label="Ações rápidas">
-            <button className="drawer__btn" type="button" aria-label="Menu">
-              <img src={drawerIcon} alt="" />
-            </button>
+            <Link className="drawer__btn" to="/" aria-label="Home">
+              <img src={home} alt="" />
+            </Link>
 
             <button
               className="drawer__btn"

@@ -9,6 +9,8 @@ import "./styles/auth.scss";
 import "./styles/profile.scss";
 import "./styles/logo.scss";
 
+import home from "./assets/home.svg";
+
 import goldenBoots from "./assets/golden_boots.png";
 import stadium     from "./assets/stadium.png";
 import drawerIcon  from "./assets/drawer_icon.svg";
@@ -384,10 +386,9 @@ export default function Home() {
 
           <nav className="drawer" aria-label="Ações rápidas">
             {/* 3 linhas → abre modal de perfil */}
-            <button className="drawer__btn" type="button" aria-label="Menu"
-              onClick={handleDrawerMenuClick}>
-              <img src={drawerIcon} alt="" />
-            </button>
+            <Link className="drawer__btn" to="/" aria-label="Home">
+              <img src={home} alt="" />
+            </Link>
 
             {/* Ícone de pessoa → verde se logado, abre perfil ou login */}
             <button
