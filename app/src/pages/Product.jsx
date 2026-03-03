@@ -204,8 +204,9 @@ export default function Product() {
 
       {/* ===== HERO ===== */}
       <section className="pHero">
+                <img src={logo} alt="Logo" className="logo" />
+
         <div className="pHero__wrap">
-        <img src={logo} alt="Logo" className="logo" />
 
 
           <h1 className="pTitle">{p.title}</h1>
@@ -247,7 +248,7 @@ export default function Product() {
           <div className="pPrice">
             <div className="pPrice__from">
               <span className="pPrice__fromLabel">de</span>{" "}
-              <span className="pPrice__fromValue">{formatBRL(originalPrice)}</span>{" "}
+              <span className="pPrice__fromValueR">R$</span> <span className="pPrice__fromValue">{(originalPrice)}</span>{" "}
               <span className="pPrice__fromLabel">por apenas</span>
             </div>
             <div className="pPrice__pix">
@@ -345,7 +346,13 @@ export default function Product() {
               <div className="reviewForm__login">
                 <span>Faça </span>
                 <button type="button" className="reviewForm__loginLink"
+
+
+
                   onClick={() => auth.openAuth("login")}>login</button>
+
+
+
                 <span> para avaliar este produto.</span>
               </div>
             ) : (
