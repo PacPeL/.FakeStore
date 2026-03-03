@@ -20,6 +20,10 @@ import check       from "./assets/check.svg";
 import truck       from "./assets/truck.svg";
 import box         from "./assets/box.svg";
 
+import discount       from "./assets/discount.svg";
+import energy       from "./assets/energy.svg";
+import handBox        from "./assets/hand_box.svg";
+
 export default function Home() {
   const [items, setItems]     = useState([]);
   const [loading, setLoading] = useState(true);
@@ -414,14 +418,44 @@ export default function Home() {
         </div>
       </section>
 
+
+
+
+
+
       {/* ===== BENEFITS ===== */}
       <section className="benefits">
         <div className="benefits__row">
-          <div className="benefits__item"><strong>FRETE GRÁTIS</strong> para compras acima de <strong>R$ 200!</strong></div>
-          <div className="benefits__item"><strong>Envio rápido</strong> para todo o <strong>Brasil!</strong></div>
-          <div className="benefits__item"><strong>20% OFF</strong> na sua primeira <strong>compra!</strong></div>
+          <div className="benefits__item">
+            <img className="benefits__icon" src={handBox} alt="" aria-hidden="true" />
+            <div className="benefits__text">
+              <strong>FRETE GRÁTIS</strong> para compras acima de <strong>R$ 200!</strong>
+            </div>
+          </div>
+
+          <div className="benefits__item">
+            <img className="benefits__icon" src={energy} alt="" aria-hidden="true" />
+            <div className="benefits__text">
+              <strong>Envio rápido</strong> para todo o <strong>Brasil!</strong>
+            </div>
+          </div>
+
+          <div className="benefits__item">
+            <img className="benefits__icon" src={discount} alt="" aria-hidden="true" />
+            <div className="benefits__text">
+              <strong>20% OFF</strong> na sua primeira <strong>compra!</strong>
+            </div>
+          </div>
         </div>
       </section>
+
+
+
+
+
+
+
+
 
       {/* ===== NOVIDADES ===== */}
       <section className="newsHead" id="novidades">
