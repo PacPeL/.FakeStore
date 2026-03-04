@@ -508,7 +508,7 @@ export default function Cart() {
                   <button
                     className="cartSummary__checkout"
                     type="button"
-                    onClick={() => { showToast("Compra realizada com sucesso!"); clearCart(); }}
+                    onClick={() => { clearCart(); }}
                   >
                     Finalizar compra
                   </button>
