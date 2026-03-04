@@ -730,8 +730,8 @@ useEffect(() => {
               <div className="buyCols">
                 <div className="buyCol buyCol--left buyPayLeft">
                   <div className="buyHead">
-                    <div className="buyTitle">Finalizar Pedido</div>
-                    <div className="buyOrder">Pedido n° {orderNumber}</div>
+                    <div className="buyTitle" id="finalizarPedido">Finalizar Pedido</div>
+                    <div className="buyOrder" id="pedidoFinalizado">Pedido n° {orderNumber}</div>
                   </div>
 
                   <div className="buyPayLabel">Forma de Pagamento</div>

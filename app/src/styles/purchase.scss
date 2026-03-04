@@ -94,6 +94,14 @@
   overflow: hidden;
 }
 
+#finalizarPedido {
+  margin-top: 120px;
+  margin-left: 20px;
+}
+#pedidoFinalizado {
+  margin-left: 20px;
+}
+
 .buyTitle {
   color: #000;
   font-family: "Montserrat", system-ui, -apple-system, Segoe UI, Roboto, Arial;
@@ -124,6 +132,7 @@
   display: flex;
   flex-direction: column;
   gap: 30px;
+  margin-top: 20px !important;
 }
 
 .buyInput {
@@ -162,7 +171,8 @@
 }
 
 .buyPayLabel {
-  margin-top: 18px;
+  margin-left: 20px;
+  margin-top: 100px;
   margin-bottom: 18px;
   color: #000;
   font-family: "Montserrat", system-ui, -apple-system, Segoe UI, Roboto, Arial;
@@ -174,6 +184,7 @@
   display: flex;
   gap: 20px;
   align-items: flex-start;
+  margin-left: 20px;
 }
 
 /* Dots */
@@ -249,6 +260,7 @@
 
 /* PIX block */
 .buyPix {
+  margin-top: 150px;
   width: 660px;
   display: flex;
   flex-direction: column;
@@ -267,7 +279,6 @@
 
 .buyPixUnderline {
   text-decoration: underline;
-  font-weight: 700;
 }
 
 .buyPixQR {
@@ -286,18 +297,19 @@
 }
 
 .buyPixHelpText {
-  width: 100%;
+  width: 50%;
   text-align: center;
   color: #000;
   font-family: "Montserrat", system-ui, -apple-system, Segoe UI, Roboto, Arial;
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 500;
 }
 
 .buyPixCode {
   width: 100%;
   height: 56px;
-  background: #e2e2e2;
+  text-decoration: underline;
+  background: transparent;
   border: 0;
   cursor: pointer;
   display: flex;
@@ -316,16 +328,16 @@
 }
 
 .buyPixCopyIcon img {
-  width: 20px;
-  height: 20px;
+  width: 25px;
+  height: 25px;
   display: block;
 }
 
 .buyPixCodeText {
   color: #111;
   font-family: "Montserrat", system-ui, -apple-system, Segoe UI, Roboto, Arial;
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 18px;
+  font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -337,7 +349,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
+  gap: 20px;;
 }
 
 .buyCardPayTitle {
