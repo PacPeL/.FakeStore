@@ -19,7 +19,11 @@
 .cartHero__wrap {
   width: 100%;
   max-width: 1920px;
-  height: 1080px;
+
+  /* ✅ ANTES: height: 1080px; (cortaba la página) */
+  min-height: 1080px;
+  height: auto;
+
   margin: 0 auto;
   padding: 60px 90px;
 
@@ -29,7 +33,9 @@
   gap: 30px;
 
   position: relative;
-  overflow: hidden;
+
+  /* ✅ ANTES: overflow: hidden; (ocultaba productos extra) */
+  overflow: visible;
 }
 
 /* ===== Drawer como columna derecha (sin mover markup) ===== */
@@ -112,7 +118,7 @@
   height: 130px;
   border-radius: 5px;
   object-fit: contain;
-  margin-left: 0;
+  margin-left: 40px;
 }
 
 /* Info con padding 40 left/right y centrado */
@@ -539,7 +545,6 @@
   height: 51px;
   opacity: 0.7;
 }
-
 
 .pPrice__pixRS {
   font-family: "Montserrat", system-ui, -apple-system, Segoe UI, Roboto, Arial;
