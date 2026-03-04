@@ -117,7 +117,9 @@ export function StoreProvider({ children }) {
   }, []);
 
   const addToCart = useCallback((p) => {
-    const size = normSize(p.size);
+    // Produtos sem tamanhos (ex: bola) nunca enviam size ao backend
+    const hasSizes = Array.isArray(p.sizes) && p.sizes.length > 0;
+    const size = hasSizes ? normSize(p.size) : null;
     dispatch({ type: "ADD", payload: {
       id: p.id ?? p._id, _id: p._id ?? p.id,
       title: p.title, price: p.price,
