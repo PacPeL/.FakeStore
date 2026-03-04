@@ -1,28 +1,45 @@
 /* ============================
-   PURCHASE MODAL (BUY)
+   PURCHASE (BUY MODAL + PAY OK)
    ============================ */
 
+/* Overlay base */
 .buyOverlay {
   position: fixed;
   inset: 0;
-  z-index: 2600; /* arriba de profile/auth (tu profileOverlay usa 2400) */
-  background: rgba(0, 0, 0, 0.18);
+  z-index: 2800;
+  background: rgba(0, 0, 0, 0.22);
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 
-  /* importante: el overlay SI recibe clicks */
+  transition: opacity 0.22s ease, visibility 0.22s ease;
+}
+
+.buyOverlay.isOpen {
+  opacity: 1;
+  visibility: visible;
   pointer-events: auto;
 }
 
+/* Modal */
 .buyModal {
-  width: min(1600px, calc(100vw - 24px));
-  max-height: calc(100vh - 24px);
-  overflow: auto;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) translateY(calc(-50vh - 140px));
+  opacity: 0;
 
+  width: min(1500px, calc(100vw - 24px));
+  max-height: calc(100vh - 24px);
+
+  transition: transform 0.38s cubic-bezier(0.2, 0.9, 0.2, 1), opacity 0.22s ease;
+  will-change: transform, opacity;
+}
+
+.buyModal.isOpen {
+  transform: translate(-50%, -50%);
   opacity: 1;
-  transform: translateY(0);
 }
 
 .buyCard {
@@ -30,70 +47,78 @@
   background: #fff;
   border-radius: 15px;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
 }
 
-/* cuerpo grande */
+/* Body layout */
 .buyBody {
-  padding: 0;
+  width: 100%;
+  height: 650px;
 }
 
 .buyCols {
-  width: 100%;
-  min-height: 673px;
   display: flex;
-  align-items: center;
-  justify-content: center;
   gap: 20px;
+  justify-content: center;
+  align-items: stretch;
+  margin-left: 0px;
+  padding: 0;
 }
 
 .buyCol {
   width: 660px;
+  min-width: 0;
+  padding: 0 0;
   display: flex;
   flex-direction: column;
-  gap: 30px;
 }
 
 .buyCol--left {
-  padding-left: 50px;
+  padding-left: 80px;
+  padding-right: 0;
+  align-items: flex-start;
 }
 
 .buyCol--right {
-  padding-right: 50px;
-  justify-content: flex-end;
+  padding-left: 0px;
+  padding-right: 80px;
+  align-items: center;
 }
 
-/* encabezados */
+/* Headings */
 .buyHead {
-  height: 201px;
+  height: 273px;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: flex-start;
+  overflow: hidden;
 }
 
 .buyTitle {
   color: #000;
-  font-family: "Montserrat", system-ui;
+  font-family: "Montserrat", system-ui, -apple-system, Segoe UI, Roboto, Arial;
   font-size: 36px;
   font-weight: 900;
 }
 
 .buyOrder {
+  margin-top: 8px;
   color: #464646;
-  font-family: "Montserrat", system-ui;
+  font-family: "Montserrat", system-ui, -apple-system, Segoe UI, Roboto, Arial;
   font-size: 15px;
   font-weight: 400;
 }
 
 .buySub {
-  color: #000;
-  font-family: "Montserrat", system-ui;
-  font-size: 20px;
-  font-weight: 400;
+  margin-top: -19px;
+  margin-bottom: 26px;
+  color: #464646;
+  font-family: "Montserrat", system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  font-size: 19px;
+  font-weight: 500;
 }
 
-/* inputs */
+/* Fields */
 .buyFields {
   width: 100%;
   display: flex;
@@ -105,15 +130,15 @@
   width: 100%;
   height: 61px;
   padding: 10px 20px;
-  background: #e2e2e2;
   border: 0;
   outline: none;
-  border-radius: 0; /* figma era “reto”, puedes cambiar si quieres */
+  border-radius: 0;
+  background: #e2e2e2;
 
-  font-family: "Montserrat", system-ui;
-  font-size: 20px;
+  color: #111;
+  font-family: "Montserrat", system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  font-size: 18px;
   font-weight: 600;
-  color: #000;
 }
 
 .buyInput::placeholder {
@@ -121,70 +146,44 @@
   font-weight: 600;
 }
 
+/* Row 2 inputs */
 .buyRow2 {
-  width: 100%;
   display: flex;
-  gap: 20px;
+  gap: 15px;
 }
 
-/* footer botones */
-.buyFooter {
-  height: 127px;
-  padding: 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
+.buyRow2 .buyInput {
+  flex: 1 1 0;
 }
 
-.buyBtn {
-  height: 61px;
-  padding: 0 30px;
-  border-radius: 15px;
-  font-family: "Montserrat", system-ui;
-  font-size: 20px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.buyBtn--ghost {
-  background: transparent;
-  color: #424242;
-  border: 2px solid #424242;
-}
-
-.buyBtn--solid {
-  background: #424242;
-  color: #fff;
-  border: 0;
-}
-
-/* ============================
-   STEP 2 - PAGAMENTO
-   ============================ */
-
-.buyPayLeft .buyHead {
-  height: 273px;
+/* Payment left */
+.buyPayLeft {
+  align-items: flex-start;
 }
 
 .buyPayLabel {
+  margin-top: 18px;
+  margin-bottom: 18px;
   color: #000;
-  font-family: "Montserrat", system-ui;
+  font-family: "Montserrat", system-ui, -apple-system, Segoe UI, Roboto, Arial;
   font-size: 20px;
   font-weight: 500;
 }
 
 .buyPayOptions {
   display: flex;
-  align-items: flex-start;
   gap: 20px;
+  align-items: flex-start;
 }
 
+/* Dots */
 .buyPayDots {
   padding: 10px 0;
   display: flex;
   flex-direction: column;
   gap: 60px;
+  align-items: center;
+  justify-content: center;
 }
 
 .buyDot {
@@ -200,6 +199,7 @@
   border-color: #000;
 }
 
+/* Pay list */
 .buyPayList {
   padding: 3px 0;
   display: flex;
@@ -208,165 +208,360 @@
 }
 
 .buyPayItem {
-  border: 0;
-  background: transparent;
-  cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 10px;
 
-  font-family: "Montserrat", system-ui;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+
+  color: #000;
+  font-family: "Montserrat", system-ui, -apple-system, Segoe UI, Roboto, Arial;
   font-size: 20px;
   font-weight: 600;
-  color: #000;
-  text-align: left;
-  padding: 0;
 }
 
 .buyPayItem.isActive {
-  text-decoration: underline;
-  text-underline-offset: 4px;
+  text-decoration: none;
 }
 
 .buyPayIcon {
   width: 24px;
   height: 24px;
-  display: grid;
-  place-items: center;
-  font-size: 18px;
-}
-
-/* PIX */
-.buyPayRight {
-  padding-top: 120px;
-  padding-bottom: 120px;
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
 }
 
+.buyPayIcon img {
+  width: 24px;
+  height: 24px;
+  display: block;
+}
+
+/* Right payment column */
+.buyPayRight {
+  justify-content: flex-end;
+  padding-right: 0;
+}
+
+/* PIX block */
 .buyPix {
-  width: 100%;
+  width: 660px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 18px;
 }
 
 .buyPixTime {
-  padding: 30px 0;
-  font-family: "Montserrat", system-ui;
+  width: 100%;
+  text-align: center;
+  color: #000;
+  font-family: "Montserrat", system-ui, -apple-system, Segoe UI, Roboto, Arial;
   font-size: 20px;
   font-weight: 400;
-  color: #000;
 }
 
 .buyPixUnderline {
   text-decoration: underline;
-  text-underline-offset: 4px;
+  font-weight: 700;
 }
 
 .buyPixQR {
   width: 300px;
   height: 299px;
   object-fit: cover;
+  border-radius: 8px;
 }
 
 .buyPixHelp {
-  padding: 16px 0;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  align-items: center;
-}
-
-.buyPixHelpText {
-  width: 320px;
-  text-align: center;
-  font-family: "Montserrat", system-ui;
-  font-size: 20px;
-  font-weight: 400;
-  color: #000;
-}
-
-.buyPixCode {
-  border: 0;
-  background: transparent;
-  cursor: pointer;
-
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-
-  font-family: "Montserrat", system-ui;
-  font-size: 20px;
-  font-weight: 500;
-  color: #000;
-  text-decoration: underline;
-  text-underline-offset: 4px;
-}
-
-.buyPixCopyIcon {
-  width: 24px;
-  height: 24px;
-  display: grid;
-  place-items: center;
-}
-
-/* CARD */
-.buyCardPay {
   width: 100%;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.buyPixHelpText {
+  width: 100%;
+  text-align: center;
+  color: #000;
+  font-family: "Montserrat", system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.buyPixCode {
+  width: 100%;
+  height: 56px;
+  background: #e2e2e2;
+  border: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 0 16px;
+}
+
+.buyPixCopyIcon {
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.buyPixCopyIcon img {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+.buyPixCodeText {
+  color: #111;
+  font-family: "Montserrat", system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  font-size: 14px;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Card payment */
+.buyCardPay {
+  width: 660px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: 20px;
 }
 
 .buyCardPayTitle {
-  font-family: "Montserrat", system-ui;
+  width: 100%;
+  text-align: center;
+  color: #000;
+  font-family: "Montserrat", system-ui, -apple-system, Segoe UI, Roboto, Arial;
   font-size: 20px;
   font-weight: 400;
-  color: #000;
-  text-align: center;
 }
 
-/* ============================
-   RESPONSIVE
-   ============================ */
-@media (max-width: 1100px) {
+/* Footer */
+.buyFooter {
+  width: 100%;
+  height: 127px;
+  padding: 10px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+.buyBtn {
+  height: 61px;
+  padding: 0 30px;
+  border-radius: 15px;
+  font-family: "Montserrat", system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  font-size: 20px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 0;
+}
+
+.buyBtn--ghost {
+  background: transparent;
+  outline: 2px solid #424242;
+  outline-offset: -2px;
+  color: #424242;
+}
+
+.buyBtn--solid {
+  background: #424242;
+  color: #fff;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
   .buyCols {
-    min-height: auto;
     flex-direction: column;
-    padding: 18px;
-    align-items: stretch;
+    gap: 0;
   }
 
   .buyCol {
     width: 100%;
-    padding: 0 !important;
+    padding: 28px 18px;
+  }
+
+  .buyCol--left {
+    padding-left: 18px;
+    padding-right: 18px;
   }
 
   .buyHead {
     height: auto;
-    padding-top: 20px;
+    padding-bottom: 16px;
   }
 
-  .buyFooter {
-    height: auto;
-    padding: 18px;
-    flex-wrap: wrap;
+  .buyTitle {
+    font-size: 28px;
   }
 
-  .buyPayRight {
-    padding: 0;
+  .buyPix,
+  .buyCardPay {
+    width: 100%;
+  }
+
+  .buyPixQR {
+    width: 240px;
+    height: 240px;
   }
 }
-.buyPayIconImg {
-  width: 22px;
-  height: 22px;
-  object-fit: contain;
+
+/* ============================
+   PAY OK POPUP (Pagamento Concluído!)
+   ============================ */
+
+.payOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2900;
+  background: rgba(0, 0, 0, 0.22);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+}
+
+.payModal {
+  width: min(720px, calc(100vw - 24px));
+}
+
+.payCard {
+  width: 70%;
+  height: 430px;
+  background: #fff;
+  border-radius: 15px;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  margin-left: 125px;
+  justify-content: flex-start;
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.18);
+}
+
+.paySide {
+  width: 152px;
+  align-self: stretch;
+  padding: 20px;
+}
+
+.payCenter {
+  width: 202px;
+  height: 371px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.payLike {
+  width: 152px;
+  height: 152px;
+  margin-top: 0;
+  object-fit: cover;
+}
+
+.payTitle {
+  margin-top: 10px;
+  text-align: center;
+  line-height: 1.05;
+  font-family: "Montserrat", system-ui, -apple-system, Segoe UI, Roboto, Arial;
+}
+
+.payTitleSmall {
+  font-size: 32px;
+  font-weight: 700;
+  color: #000;
+}
+
+.payTitleBig {
+  font-size: 36px;
+  font-weight: 700;
+  color: #000;
+}
+
+.payMsg {
+  margin-top: 95px;
+  padding-top: 14px;
+  width: 202px;
+  text-align: center;
+
+  font-family: "Montserrat", system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  font-size: 10px;
+  font-weight: 500;
+  color: #000;
+}
+
+.payMsgStrong {
+  font-weight: 700;
+}
+
+.payCloseWrap {
+  width: 152px;
+  align-self: stretch;
+  padding: 25px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+}
+
+.payCloseBtn {
+  width: 35px;
+  height: 31px;
+  padding: 7px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.payCloseBtn img {
+  width: 18px;
+  height: 18px;
   display: block;
 }
 
-.buyPixCopyIconImg {
-  width: 22px;
-  height: 22px;
-  object-fit: contain;
-  display: block;
+@media (max-width: 520px) {
+  .payCard {
+    width: 100%;
+  }
+  .paySide {
+    display: none;
+  }
+  .payCloseWrap {
+    width: 70px;
+  }
+}
+
+
+/* ============================
+   FIX STEP 1 (ENDEREÇO LAYOUT)
+   ============================ */
+
+
+/* Compensa el margen negativo del subtítulo para que el match sea perfecto */
+.buyCol--right .buyFields {
+  margin-top: calc(318px - 14px); /* -14px es el margin-top de .buySub */
+}
+
+/* En responsive (cuando se vuelve columna), NO queremos ese empuje */
+@media (max-width: 1200px) {
+  .buyCol--right .buyFields {
+    margin-top: 0;
+  }
 }

@@ -22,6 +22,8 @@ import qr  from "../assets/qr.png";
 import pix  from "../assets/pix.svg";
 import debit  from "../assets/debit.svg";
 import copy  from "../assets/copy.svg";
+import x  from "../assets/x.svg";
+import like  from "../assets/like.gif";
 
 import check from "../assets/check.svg";
 import truck from "../assets/truck.svg";
@@ -166,6 +168,18 @@ export default function Product() {
     return false;
   };
 
+
+
+
+
+
+
+
+
+
+
+
+  
   // ==========================
   // ✅ NUEVO: POPUP DE COMPRA
   // ==========================
@@ -173,6 +187,32 @@ export default function Product() {
   const [buyStep, setBuyStep] = useState(1);
   const [payMethod, setPayMethod] = useState("pix");
   const [pixSecondsLeft, setPixSecondsLeft] = useState(180);
+
+// ✅ POPUP "Pagamento Concluído!"
+const [payOkOpen, setPayOkOpen] = useState(false);
+
+const openPayOk = () => setPayOkOpen(true);
+const closePayOk = () => setPayOkOpen(false);
+
+// ✅ finalizar compra (UI)
+const finishPurchase = () => {
+  // cierra el modal de compra
+  closeBuyAll();
+  // abre el popup de éxito
+  setTimeout(() => setPayOkOpen(true), 0);
+};
+
+
+
+
+
+
+
+
+
+
+
+
 
   const [buyForm, setBuyForm] = useState({
     fullName: "",
@@ -564,6 +604,14 @@ useEffect(() => {
 
 
 
+
+
+
+
+
+
+
+
 {/* =======================================================
     ✅ INICIO: APARTADO DE COMPRA (BUY MODAL / POPUP)
     ======================================================= */}
@@ -786,10 +834,24 @@ useEffect(() => {
               </div>
             </div>
 
+            {/* ✅ FOOTER distinto según método */}
             <div className="buyFooter">
-              <button type="button" className="buyBtn buyBtn--ghost" onClick={closeBuyAll}>
-                Fechar
-              </button>
+              {payMethod === "pix" ? (
+                // ✅ En PIX: Fechar también finaliza (abre popup éxito)
+                <button type="button" className="buyBtn buyBtn--ghost" onClick={finishPurchase}>
+                  Fechar
+                </button>
+              ) : (
+                // ✅ En cartão: Fechar + Ok (como en Figma)
+                <>
+                  <button type="button" className="buyBtn buyBtn--ghost" onClick={closeBuyAll}>
+                    Fechar
+                  </button>
+                  <button type="button" className="buyBtn buyBtn--solid" onClick={finishPurchase}>
+                    Ok
+                  </button>
+                </>
+              )}
             </div>
           </>
         )}
@@ -800,6 +862,58 @@ useEffect(() => {
 {/* =======================================================
     ✅ FIM: APARTADO DE COMPRA (BUY MODAL / POPUP)
     ======================================================= */}
+
+
+
+{/* =======================================================
+    ✅ POPUP: PAGAMENTO CONCLUÍDO
+    ======================================================= */}
+{payOkOpen && (
+  <div className="payOverlay" onClick={(e) => { if (e.target === e.currentTarget) closePayOk(); }}>
+    <div className="payModal" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+      <div className="payCard">
+        <div className="paySide" />
+
+        <div className="payCenter">
+          <img className="payLike" src={like} alt="Pagamento concluído" />
+          <div className="payTitle">
+            <span className="payTitleSmall">Pagamento </span>
+            <span className="payTitleBig">Concluído!</span>
+          </div>
+
+          <div className="payMsg">
+            <span>Seu pedido foi confirmado, acompanhe o andamento em </span>
+            <span className="payMsgStrong">“Confirmado(s)”.</span>
+          </div>
+        </div>
+
+        <div className="payCloseWrap">
+          <button type="button" className="payCloseBtn" onClick={closePayOk} aria-label="Fechar">
+            <img src={x} alt="" />
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+{/* =======================================================
+    ✅ FIM POPUP: PAGAMENTO CONCLUÍDO
+    ======================================================= */}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

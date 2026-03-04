@@ -16,6 +16,13 @@ import cartIcon    from "../assets/lineicons_cart-1.svg";
 import searchIcon  from "../assets/icon.svg";
 import logo  from "../assets/logo.svg";
 
+import qr  from "../assets/qr.png";
+import pix  from "../assets/pix.svg";
+import debit  from "../assets/debit.svg";
+import copy  from "../assets/copy.svg";
+import x  from "../assets/x.svg";
+import like  from "../assets/like.gif";
+
 // ✅ mismos icons que usas en Home para el perfil
 import check from "../assets/check.svg";
 import truck from "../assets/truck.svg";
