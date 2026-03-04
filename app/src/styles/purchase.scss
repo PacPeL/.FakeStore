@@ -1,0 +1,372 @@
+/* ============================
+   PURCHASE MODAL (BUY)
+   ============================ */
+
+.buyOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2600; /* arriba de profile/auth (tu profileOverlay usa 2400) */
+  background: rgba(0, 0, 0, 0.18);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* importante: el overlay SI recibe clicks */
+  pointer-events: auto;
+}
+
+.buyModal {
+  width: min(1600px, calc(100vw - 24px));
+  max-height: calc(100vh - 24px);
+  overflow: auto;
+
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.buyCard {
+  width: 100%;
+  background: #fff;
+  border-radius: 15px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* cuerpo grande */
+.buyBody {
+  padding: 0;
+}
+
+.buyCols {
+  width: 100%;
+  min-height: 673px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.buyCol {
+  width: 660px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.buyCol--left {
+  padding-left: 50px;
+}
+
+.buyCol--right {
+  padding-right: 50px;
+  justify-content: flex-end;
+}
+
+/* encabezados */
+.buyHead {
+  height: 201px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.buyTitle {
+  color: #000;
+  font-family: "Montserrat", system-ui;
+  font-size: 36px;
+  font-weight: 900;
+}
+
+.buyOrder {
+  color: #464646;
+  font-family: "Montserrat", system-ui;
+  font-size: 15px;
+  font-weight: 400;
+}
+
+.buySub {
+  color: #000;
+  font-family: "Montserrat", system-ui;
+  font-size: 20px;
+  font-weight: 400;
+}
+
+/* inputs */
+.buyFields {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.buyInput {
+  width: 100%;
+  height: 61px;
+  padding: 10px 20px;
+  background: #e2e2e2;
+  border: 0;
+  outline: none;
+  border-radius: 0; /* figma era “reto”, puedes cambiar si quieres */
+
+  font-family: "Montserrat", system-ui;
+  font-size: 20px;
+  font-weight: 600;
+  color: #000;
+}
+
+.buyInput::placeholder {
+  color: #bababa;
+  font-weight: 600;
+}
+
+.buyRow2 {
+  width: 100%;
+  display: flex;
+  gap: 20px;
+}
+
+/* footer botones */
+.buyFooter {
+  height: 127px;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.buyBtn {
+  height: 61px;
+  padding: 0 30px;
+  border-radius: 15px;
+  font-family: "Montserrat", system-ui;
+  font-size: 20px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.buyBtn--ghost {
+  background: transparent;
+  color: #424242;
+  border: 2px solid #424242;
+}
+
+.buyBtn--solid {
+  background: #424242;
+  color: #fff;
+  border: 0;
+}
+
+/* ============================
+   STEP 2 - PAGAMENTO
+   ============================ */
+
+.buyPayLeft .buyHead {
+  height: 273px;
+}
+
+.buyPayLabel {
+  color: #000;
+  font-family: "Montserrat", system-ui;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.buyPayOptions {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.buyPayDots {
+  padding: 10px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 60px;
+}
+
+.buyDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  border: 1px solid #000;
+  background: transparent;
+}
+
+.buyDot.isOn {
+  background: #000;
+  border-color: #000;
+}
+
+.buyPayList {
+  padding: 3px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 46px;
+}
+
+.buyPayItem {
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+
+  font-family: "Montserrat", system-ui;
+  font-size: 20px;
+  font-weight: 600;
+  color: #000;
+  text-align: left;
+  padding: 0;
+}
+
+.buyPayItem.isActive {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.buyPayIcon {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+}
+
+/* PIX */
+.buyPayRight {
+  padding-top: 120px;
+  padding-bottom: 120px;
+  align-items: center;
+}
+
+.buyPix {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.buyPixTime {
+  padding: 30px 0;
+  font-family: "Montserrat", system-ui;
+  font-size: 20px;
+  font-weight: 400;
+  color: #000;
+}
+
+.buyPixUnderline {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.buyPixQR {
+  width: 300px;
+  height: 299px;
+  object-fit: cover;
+}
+
+.buyPixHelp {
+  padding: 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+}
+
+.buyPixHelpText {
+  width: 320px;
+  text-align: center;
+  font-family: "Montserrat", system-ui;
+  font-size: 20px;
+  font-weight: 400;
+  color: #000;
+}
+
+.buyPixCode {
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+
+  font-family: "Montserrat", system-ui;
+  font-size: 20px;
+  font-weight: 500;
+  color: #000;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.buyPixCopyIcon {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+}
+
+/* CARD */
+.buyCardPay {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.buyCardPayTitle {
+  font-family: "Montserrat", system-ui;
+  font-size: 20px;
+  font-weight: 400;
+  color: #000;
+  text-align: center;
+}
+
+/* ============================
+   RESPONSIVE
+   ============================ */
+@media (max-width: 1100px) {
+  .buyCols {
+    min-height: auto;
+    flex-direction: column;
+    padding: 18px;
+    align-items: stretch;
+  }
+
+  .buyCol {
+    width: 100%;
+    padding: 0 !important;
+  }
+
+  .buyHead {
+    height: auto;
+    padding-top: 20px;
+  }
+
+  .buyFooter {
+    height: auto;
+    padding: 18px;
+    flex-wrap: wrap;
+  }
+
+  .buyPayRight {
+    padding: 0;
+  }
+}
+.buyPayIconImg {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  display: block;
+}
+
+.buyPixCopyIconImg {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  display: block;
+}

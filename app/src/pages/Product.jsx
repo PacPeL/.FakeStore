@@ -7,7 +7,8 @@ import AuthModal from "../components/AuthModal.jsx";
 import "../styles/product.scss";
 import "../styles/auth.scss";
 import "../styles/logo.scss";
-import "../styles/profile.scss"; // ✅ agregado
+import "../styles/profile.scss";
+import "../styles/purchase.scss";
 
 import home from "../assets/home.svg";
 
@@ -17,7 +18,11 @@ import cartIcon    from "../assets/lineicons_cart-1.svg";
 import searchIcon  from "../assets/icon.svg";
 import logo  from "../assets/logo.svg";
 
-// ✅ mismos icons que usas en Home/Cart/Catalog para el perfil
+import qr  from "../assets/qr.png";
+import pix  from "../assets/pix.svg";
+import debit  from "../assets/debit.svg";
+import copy  from "../assets/copy.svg";
+
 import check from "../assets/check.svg";
 import truck from "../assets/truck.svg";
 import box from "../assets/box.svg";
@@ -45,7 +50,7 @@ export default function Product() {
   const [searchOpen, setSearchOpen] = useState(false);
   const searchInputRef              = useRef(null);
 
-  // ✅ PERFIL (agregado, igual al Home/Cart/Catalog)
+  // ✅ PERFIL
   const [profileOpen, setProfileOpen] = useState(false);
   const [profileView, setProfileView] = useState("profile");
   const [ordersTab, setOrdersTab]     = useState("confirmed");
@@ -145,6 +150,107 @@ export default function Product() {
   const ratingAvg   = useMemo(() => Math.min(5, Math.max(0, Number(p?.rating?.rate ?? 0))), [p]);
   const ratingCount = useMemo(() => Number(p?.rating?.count ?? 0), [p]);
 
+  // ✅ GUARD: comprar
+  const requireAuthToBuy = () => {
+    if (isLoggedIn) return true;
+    window.alert("Você precisa estar logado para comprar.");
+    auth.openAuth("login");
+    return false;
+  };
+
+  // ✅ GUARD: carrito con alerta
+  const requireAuthToCart = () => {
+    if (isLoggedIn) return true;
+    window.alert("Você precisa estar logado para adicionar ao carrinho.");
+    auth.openAuth("login");
+    return false;
+  };
+
+  // ==========================
+  // ✅ NUEVO: POPUP DE COMPRA
+  // ==========================
+  const [buyOpen, setBuyOpen] = useState(false);
+  const [buyStep, setBuyStep] = useState(1);
+  const [payMethod, setPayMethod] = useState("pix");
+  const [pixSecondsLeft, setPixSecondsLeft] = useState(180);
+
+  const [buyForm, setBuyForm] = useState({
+    fullName: "",
+    cpf: "",
+    cep: "",
+    state: "",
+    city: "",
+    neighborhood: "",
+    street: "",
+    number: "",
+    cardName: "",
+    cardNumber: "",
+    cardExp: "",
+    cardCvv: "",
+  });
+
+  const orderNumber = useMemo(() => {
+    const n = Math.floor(1000000 + Math.random() * 9000000);
+    return String(n);
+  }, [buyOpen]);
+
+  const pixCode = useMemo(() => "r462a2-1k6t62-28j58r-27e37b", []);
+
+  const closeBuyAll = () => {
+    setBuyOpen(false);
+    setBuyStep(1);
+    setPayMethod("pix");
+    setPixSecondsLeft(180);
+  };
+
+const openBuy = () => {
+  if (!isLoggedIn) {
+    window.alert("Você precisa estar logado para comprar.");
+    auth.openAuth("login");
+    return;
+  }
+
+  // ✅ abre en el siguiente tick para evitar "click abre + click cierra"
+  setTimeout(() => {
+    setBuyOpen(true);
+    setBuyStep(1);
+    setPayMethod("pix");
+    setPixSecondsLeft(180);
+  }, 0);
+};
+
+  useEffect(() => {
+    if (!buyOpen) return;
+    if (buyStep !== 2) return;
+    if (payMethod !== "pix") return;
+
+    const t = setInterval(() => {
+      setPixSecondsLeft((s) => Math.max(0, s - 1));
+    }, 1000);
+
+    return () => clearInterval(t);
+  }, [buyOpen, buyStep, payMethod]);
+
+  const formatMMSS = (secs) => {
+    const m = Math.floor(secs / 60);
+    const s = secs % 60;
+    return `${m}:${String(s).padStart(2, "0")}`;
+  };
+
+  const copyPix = async () => {
+    try {
+      await navigator.clipboard.writeText(pixCode);
+      window.alert("Código PIX copiado!");
+    } catch {
+      window.alert("Não foi possível copiar automaticamente. Copie manualmente.");
+    }
+  };
+
+  const goNextBuyStep = () => setBuyStep(2);
+  // ==========================
+  // END NUEVO POPUP DE COMPRA
+  // ==========================
+
   useEffect(() => {
     const handle = (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
@@ -153,28 +259,43 @@ export default function Product() {
       if (e.key === "Escape") {
         setSearchOpen(false);
         auth.closeAuth();
-        setProfileOpen(false); // ✅ agregado
+        setProfileOpen(false);
+        if (buyOpen) closeBuyAll();
       }
     };
     window.addEventListener("keydown", handle);
     return () => window.removeEventListener("keydown", handle);
-  }, [auth]);
+  }, [auth, buyOpen]);
 
-  useEffect(() => {
-    if (!searchOpen && !auth.authOpen && !profileOpen) return;
-    const handle = (e) => {
-      if (e.target.closest(".searchHeader")) return;
-      if (e.target.closest(".drawer")) return;
-      if (e.target.closest(".authModal")) return;
-      if (e.target.closest(".profileModal")) return; // ✅ agregado
 
-      if (auth.authOpen) auth.closeAuth();
-      if (searchOpen) setSearchOpen(false);
-      if (profileOpen) setProfileOpen(false); // ✅ agregado
-    };
-    document.addEventListener("click", handle);
-    return () => document.removeEventListener("click", handle);
-  }, [searchOpen, auth, profileOpen]);
+
+
+
+useEffect(() => {
+  if (!searchOpen && !auth.authOpen && !profileOpen && !buyOpen) return;
+
+  const handle = (e) => {
+    // ✅ Si el BUY está abierto, NO cierres nada por document click.
+    // El overlay ya se encarga de cerrar cuando toca el fondo.
+    if (buyOpen) return;
+
+    if (e.target.closest(".searchHeader")) return;
+    if (e.target.closest(".drawer")) return;
+    if (e.target.closest(".authModal")) return;
+    if (e.target.closest(".profileModal")) return;
+
+    if (auth.authOpen) auth.closeAuth();
+    if (searchOpen) setSearchOpen(false);
+    if (profileOpen) setProfileOpen(false);
+  };
+
+  document.addEventListener("click", handle);
+  return () => document.removeEventListener("click", handle);
+}, [searchOpen, auth, profileOpen, buyOpen]);
+
+
+
+
 
   useEffect(() => {
     if (searchOpen) setTimeout(() => searchInputRef.current?.focus(), 80);
@@ -185,18 +306,9 @@ export default function Product() {
     setSearchOpen(false);
   };
 
-  // ✅ ARREGLO: antes deslogueaba. Ahora abre perfil si está logueado, si no abre login.
   const handleProfileClick = () => {
     if (isLoggedIn) setProfileOpen(true);
     else auth.openAuth("login");
-  };
-
-  // ✅ GUARD: solo deja comprar/agregar si está logeado (sin tocar markup/clases)
-  const requireAuth = () => {
-    if (isLoggedIn) return true;
-    window.alert("Você precisa estar logado para comprar ou adicionar ao carrinho.");
-    auth.openAuth("login"); // abre el modal
-    return false;
   };
 
   const handleSubmitReview = async (e) => {
@@ -249,24 +361,34 @@ export default function Product() {
 
   return (
     <div className="product">
-
       {/* ===== SEARCH HEADER ===== */}
       <div className={`searchHeader ${searchOpen ? "isOpen" : ""}`}>
         <div className="searchHeader__bar">
           <img src={searchIcon} alt="" className="searchHeader__icon" />
-          <input ref={searchInputRef} className="searchHeader__input" type="text"
-            placeholder="Buscar..." value={q}
+          <input
+            ref={searchInputRef}
+            className="searchHeader__input"
+            type="text"
+            placeholder="Buscar..."
+            value={q}
             onChange={(e) => setQ(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && goToCatalog(q)}
-            aria-label="Buscar produtos" />
+            aria-label="Buscar produtos"
+          />
         </div>
         <div className="searchHeader__section">
           <div className="searchHeader__title">Mais buscados</div>
         </div>
         <div className="searchHeader__tags">
           {recentTags.map((t) => (
-            <button key={t} type="button" className="tag"
-              onClick={() => { setQ(t); setTimeout(() => goToCatalog(t), 0); }}>{t}</button>
+            <button
+              key={t}
+              type="button"
+              className="tag"
+              onClick={() => { setQ(t); setTimeout(() => goToCatalog(t), 0); }}
+            >
+              {t}
+            </button>
           ))}
         </div>
       </div>
@@ -274,7 +396,7 @@ export default function Product() {
       {/* ===== AUTH MODAL ===== */}
       <AuthModal {...auth} />
 
-      {/* ===== PROFILE MODAL (agregado) ===== */}
+      {/* ===== PROFILE MODAL ===== */}
       <div className={`profileOverlay ${profileOpen ? "isOpen" : ""}`} onClick={closeProfileAll}>
         <div
           className={`profileModal ${profileOpen ? "isOpen" : ""}`}
@@ -284,12 +406,8 @@ export default function Product() {
         >
           <div className="profileCard">
             <div className="profileCard__pad">
-
-              {/* ── VIEW: PROFILE ── */}
               {profileView === "profile" && (
                 <div className="profileGrid">
-
-                  {/* LEFT */}
                   <div className="profileLeft">
                     <div className="profileHello">
                       <div className="profileHello__text">
@@ -329,7 +447,6 @@ export default function Product() {
                     </div>
                   </div>
 
-                  {/* RIGHT */}
                   <div className="profileRight">
                     <div className="profileRight__titleWrap">
                       <div className="profileRight__title">Minhas Compras</div>
@@ -356,11 +473,9 @@ export default function Product() {
                       </div>
                     </div>
                   </div>
-
                 </div>
               )}
 
-              {/* ── VIEW: ORDERS ── */}
               {profileView === "orders" && (
                 <div className="ordersView">
                   <div className="ordersHead">
@@ -395,10 +510,8 @@ export default function Product() {
                   </div>
                 </div>
               )}
-
             </div>
 
-            {/* FOOTER BUTTONS */}
             <div className="profileActions">
               {profileView === "profile" ? (
                 <>
@@ -433,20 +546,282 @@ export default function Product() {
                 </button>
               )}
             </div>
-
           </div>
         </div>
       </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{/* =======================================================
+    ✅ INICIO: APARTADO DE COMPRA (BUY MODAL / POPUP)
+    ======================================================= */}
+{buyOpen && (
+  <div
+    className={`buyOverlay ${buyOpen ? "isOpen" : ""}`}
+    onClick={(e) => {
+      // ✅ SOLO cierra si el click fue en el fondo (overlay), NO en el modal
+      if (e.target === e.currentTarget) closeBuyAll();
+    }}
+  >
+    <div
+      className={`buyModal ${buyOpen ? "isOpen" : ""}`}
+      role="dialog"
+      aria-modal="true"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div className="buyCard">
+        {/* STEP 1: ENDEREÇO */}
+        {buyStep === 1 && (
+          <>
+            <div className="buyBody">
+              <div className="buyCols">
+                <div className="buyCol buyCol--left">
+                  <div className="buyHead">
+                    <div className="buyTitle">Endereço</div>
+                  </div>
+
+                  <div className="buySub">Preencha os campos abaixo!</div>
+
+                  <div className="buyFields">
+                    <input
+                      className="buyInput"
+                      value={buyForm.fullName}
+                      onChange={(e) => setBuyForm((p) => ({ ...p, fullName: e.target.value }))}
+                      placeholder="Nome Completo"
+                      aria-label="Nome Completo"
+                    />
+                    <input
+                      className="buyInput"
+                      value={buyForm.cpf}
+                      onChange={(e) => setBuyForm((p) => ({ ...p, cpf: e.target.value }))}
+                      placeholder="CPF"
+                      aria-label="CPF"
+                    />
+                    <input
+                      className="buyInput"
+                      value={buyForm.cep}
+                      onChange={(e) => setBuyForm((p) => ({ ...p, cep: e.target.value }))}
+                      placeholder="CEP"
+                      aria-label="CEP"
+                    />
+                    <input
+                      className="buyInput"
+                      value={buyForm.state}
+                      onChange={(e) => setBuyForm((p) => ({ ...p, state: e.target.value }))}
+                      placeholder="Estado"
+                      aria-label="Estado"
+                    />
+                  </div>
+                </div>
+
+                <div className="buyCol buyCol--right">
+                  <div className="buyFields">
+                    <input
+                      className="buyInput"
+                      value={buyForm.city}
+                      onChange={(e) => setBuyForm((p) => ({ ...p, city: e.target.value }))}
+                      placeholder="Cidade"
+                      aria-label="Cidade"
+                    />
+                    <input
+                      className="buyInput"
+                      value={buyForm.neighborhood}
+                      onChange={(e) => setBuyForm((p) => ({ ...p, neighborhood: e.target.value }))}
+                      placeholder="Bairro"
+                      aria-label="Bairro"
+                    />
+
+                    <div className="buyRow2">
+                      <input
+                        className="buyInput"
+                        value={buyForm.street}
+                        onChange={(e) => setBuyForm((p) => ({ ...p, street: e.target.value }))}
+                        placeholder="Rua"
+                        aria-label="Rua"
+                      />
+                      <input
+                        className="buyInput"
+                        value={buyForm.number}
+                        onChange={(e) => setBuyForm((p) => ({ ...p, number: e.target.value }))}
+                        placeholder="Número"
+                        aria-label="Número"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="buyFooter">
+              <button type="button" className="buyBtn buyBtn--ghost" onClick={closeBuyAll}>
+                Fechar
+              </button>
+              <button type="button" className="buyBtn buyBtn--solid" onClick={goNextBuyStep}>
+                Prosseguir
+              </button>
+            </div>
+          </>
+        )}
+
+        {/* STEP 2: PAGAMENTO */}
+        {buyStep === 2 && (
+          <>
+            <div className="buyBody">
+              <div className="buyCols">
+                <div className="buyCol buyCol--left buyPayLeft">
+                  <div className="buyHead">
+                    <div className="buyTitle">Finalizar Pedido</div>
+                    <div className="buyOrder">Pedido n° {orderNumber}</div>
+                  </div>
+
+                  <div className="buyPayLabel">Forma de Pagamento</div>
+
+                  <div className="buyPayOptions">
+                    <div className="buyPayDots">
+                      <span className={`buyDot ${payMethod === "pix" ? "isOn" : ""}`} />
+                      <span className={`buyDot ${payMethod === "card" ? "isOn" : ""}`} />
+                    </div>
+
+                    <div className="buyPayList">
+                      <button
+                        type="button"
+                        className={`buyPayItem ${payMethod === "pix" ? "isActive" : ""}`}
+                        onClick={() => setPayMethod("pix")}
+                      >
+                        <span className="buyPayIcon" aria-hidden="true">
+                          <img src={pix} alt="" />
+                        </span>
+                        <span>Pix</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        className={`buyPayItem ${payMethod === "card" ? "isActive" : ""}`}
+                        onClick={() => setPayMethod("card")}
+                      >
+                        <span className="buyPayIcon" aria-hidden="true">
+                          <img src={debit} alt="" />
+                        </span>
+                        <span>Débito/Crédito</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="buyCol buyCol--right buyPayRight">
+                  {payMethod === "pix" ? (
+                    <div className="buyPix">
+                      <div className="buyPixTime">
+                        <span>Tempo Restante </span>
+                        <span className="buyPixUnderline">{formatMMSS(pixSecondsLeft)}</span>
+                      </div>
+
+                      <img className="buyPixQR" src={qr} alt="QR Code PIX" />
+
+                      <div className="buyPixHelp">
+                        <div className="buyPixHelpText">
+                          Aponte a câmera do seu celular ou copie o código abaixo.
+                        </div>
+
+                        <button type="button" className="buyPixCode" onClick={copyPix}>
+                          <span className="buyPixCopyIcon" aria-hidden="true">
+                            <img src={copy} alt="" />
+                          </span>
+                          <span className="buyPixCodeText">{pixCode}</span>
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="buyCardPay">
+                      <div className="buyCardPayTitle">Informações do Cartão</div>
+
+                      <div className="buyFields">
+                        <input
+                          className="buyInput"
+                          value={buyForm.cardName}
+                          onChange={(e) => setBuyForm((p) => ({ ...p, cardName: e.target.value }))}
+                          placeholder="Nome no Cartão"
+                          aria-label="Nome no Cartão"
+                        />
+                        <input
+                          className="buyInput"
+                          value={buyForm.cardNumber}
+                          onChange={(e) => setBuyForm((p) => ({ ...p, cardNumber: e.target.value }))}
+                          placeholder="Número do Cartão"
+                          aria-label="Número do Cartão"
+                        />
+
+                        <div className="buyRow2">
+                          <input
+                            className="buyInput"
+                            value={buyForm.cardExp}
+                            onChange={(e) => setBuyForm((p) => ({ ...p, cardExp: e.target.value }))}
+                            placeholder="Data de Validade"
+                            aria-label="Data de Validade"
+                          />
+                          <input
+                            className="buyInput"
+                            value={buyForm.cardCvv}
+                            onChange={(e) => setBuyForm((p) => ({ ...p, cardCvv: e.target.value }))}
+                            placeholder="CVV"
+                            aria-label="CVV"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="buyFooter">
+              <button type="button" className="buyBtn buyBtn--ghost" onClick={closeBuyAll}>
+                Fechar
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  </div>
+)}
+{/* =======================================================
+    ✅ FIM: APARTADO DE COMPRA (BUY MODAL / POPUP)
+    ======================================================= */}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
       {/* ===== HERO ===== */}
       <section className="pHero">
         <img src={logo} alt="Logo" className="logo" />
 
         <div className="pHero__wrap">
-
           <h1 className="pTitle">{p.title}</h1>
 
-          {/* Rating */}
           <div className="pRating">
             <div className="pRating__stars" aria-label={`Avaliação média ${ratingAvg.toFixed(1)} de 5`}>
               {Array.from({ length: 5 }).map((_, i) => {
@@ -462,7 +837,6 @@ export default function Product() {
             </div>
           </div>
 
-          {/* Tamanhos — dinâmicos do MongoDB */}
           {sizes.length > 0 && (
             <div className="pSizes">
               <div className="pSizes__label">Tamanho:</div>
@@ -479,40 +853,56 @@ export default function Product() {
             </div>
           )}
 
-          {/* Preço */}
           <div className="pPrice">
             <div className="pPrice__from">
               <span className="pPrice__fromLabel">de</span>{" "}
-              <span className="pPrice__fromValueR">R$</span> <span className="pPrice__fromValue">{(originalPrice).toFixed(2)}</span>{" "}
+              <span className="pPrice__fromValueR">R$</span>{" "}
+              <span className="pPrice__fromValue">{(originalPrice).toFixed(2)}</span>{" "}
               <span className="pPrice__fromLabel">por apenas</span>
             </div>
+
             <div className="pPrice__pix">
               <span className="pPrice__pixRS">R$</span>
               <span className="pPrice__pixValue">{pixPrice.toFixed(2).replace(".", ",")}</span>
               <span className="pPrice__pixLabel">no</span>
               <span className="pPrice__pixMethod">PIX</span>
             </div>
+
             <div className="pPrice__inst">
               ou <strong>{INSTALLMENTS}x</strong> de <strong>{formatBRL(installment)}</strong> sem juros
             </div>
 
             <div className="pBuyRow">
-              <button
-                className="pBuy"
-                type="button"
-                onClick={() => {
-                  if (!requireAuth()) return;
-                  addToCart({ ...p, size });
-                  nav("/cart");
-                }}>
-                Comprar
-              </button>
+
+
+
+
+
+
+          <button
+            className="pBuy"
+            type="button"
+            style={{ position: "relative", zIndex: 50, pointerEvents: "auto" }} // 👈 fuerza arriba
+            onPointerDownCapture={(e) => { e.preventDefault(); e.stopPropagation(); openBuy(); }} // 👈 dispara antes que capas raras
+            onClickCapture={(e) => { e.preventDefault(); e.stopPropagation(); openBuy(); }}       // 👈 backup
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); openBuy(); }}              // 👈 backup final
+          >
+            Comprar
+          </button>
+
+
+
+
+
+
+
+
 
               <button
                 className="pBuyCart"
                 type="button"
                 onClick={() => {
-                  if (!requireAuth()) return;
+                  if (!requireAuthToCart()) return;
                   addToCart({ ...p, size });
                   window.alert("Produto adicionado ao carrinho!");
                 }}
@@ -527,25 +917,37 @@ export default function Product() {
             <img src={p.image} alt={p.title} />
           </div>
 
-          {/* Drawer */}
           <nav className="drawer" aria-label="Ações rápidas">
             <Link className="drawer__btn" to="/" aria-label="Home">
               <img src={home} alt="" />
             </Link>
-            <button className="drawer__btn" type="button"
+
+            <button
+              className="drawer__btn"
+              type="button"
               aria-label={isLoggedIn ? `Perfil (${authUser?.name ?? ""})` : "Entrar"}
               title={isLoggedIn
                 ? `Ver perfil (${authUser?.name ?? authUser?.email ?? ""})`
                 : "Entrar / Cadastrar"}
-              onClick={handleProfileClick}>
-              <img src={profileIcon} alt=""
-                style={isLoggedIn ? { filter: "invert(35%) sepia(80%) saturate(400%) hue-rotate(100deg)" } : {}} />
+              onClick={handleProfileClick}
+            >
+              <img
+                src={profileIcon}
+                alt=""
+                style={isLoggedIn ? { filter: "invert(35%) sepia(80%) saturate(400%) hue-rotate(100deg)" } : {}}
+              />
             </button>
+
             <Link className="drawer__btn" to="/cart" aria-label="Carrinho">
               <img src={cartIcon} alt="" />
             </Link>
-            <button className="drawer__btn" type="button" aria-label="Buscar"
-              onClick={() => setSearchOpen((p) => !p)}>
+
+            <button
+              className="drawer__btn"
+              type="button"
+              aria-label="Buscar"
+              onClick={() => setSearchOpen((pp) => !pp)}
+            >
               <img src={searchIcon} alt="" />
             </button>
           </nav>
@@ -559,7 +961,6 @@ export default function Product() {
         </div>
       </section>
 
-      {/* ===== DESCRIÇÃO ===== */}
       <section className="pContent">
         <div className="pContent__inner">
           <div className="pDesc" id="descricao">
@@ -569,7 +970,6 @@ export default function Product() {
         </div>
       </section>
 
-      {/* ===== AVALIAÇÕES ===== */}
       <section className="pReviews">
         <div className="pReviews__inner">
           <div className="pReviews__title">Avaliações:</div>
