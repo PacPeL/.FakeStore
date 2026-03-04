@@ -26,9 +26,13 @@ import discount       from "./assets/discount.svg";
 import energy       from "./assets/energy.svg";
 import handBox        from "./assets/hand_box.svg";
 
+// ID fixo do produto GMA D'or no MongoDB Atlas — nunca muda
+const GMA_DOR_ID = "69a812fffbca10dbb6964307";
+
 export default function Home() {
   const [items, setItems]     = useState([]);
   const [loading, setLoading] = useState(true);
+  const [gmaDorId, setGmaDorId] = useState(GMA_DOR_ID);
 
   const { isLoggedIn, logout, authUser, setAuthUserFromGoogle } = useStore();
   const auth = useAuthModal();
@@ -94,9 +98,18 @@ export default function Home() {
   useEffect(() => {
     (async () => {
       setLoading(true);
-      try { setItems(await api.getProducts()); }
-      catch (err) { console.error(err); }
-      finally { setLoading(false); }
+      try {
+        const products = await api.getProducts();
+        setItems(products);
+
+        // Confirma o id do GMA D'or no banco — fallback para o ID hardcodado se não encontrar
+        const gmaDor = products.find((p) => p._id === GMA_DOR_ID || p.id === GMA_DOR_ID);
+        if (gmaDor) setGmaDorId(gmaDor.id);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
     })();
   }, []);
 
@@ -325,7 +338,6 @@ export default function Home() {
                 <>
                   {isLoggedIn ? (
                     <>
-                      {/* Logado: Sair + Salvar */}
                       <button type="button" className="profileBtn profileBtn--ghost"
                         onClick={handleLogoutFromProfile}>
                         Sair
@@ -337,7 +349,6 @@ export default function Home() {
                     </>
                   ) : (
                     <>
-                      {/* Não logado: Cancelar + Entrar */}
                       <button type="button" className="profileBtn profileBtn--ghost"
                         onClick={closeProfileAll}>
                         Cancelar
@@ -375,22 +386,21 @@ export default function Home() {
             </p>
           </div>
 
-          <button className="hero__cta" type="button"
-            onClick={() => document.getElementById("novidades")?.scrollIntoView({ behavior: "smooth" })}>
+          {/* "Ler mais" → página do produto */}
+          <Link className="hero__cta" to={`/produto/${gmaDorId}`}>
             Ler mais
-          </button>
+          </Link>
 
-          <div className="hero__media">
+          {/* Imagem da chuteira → página do produto */}
+          <Link className="hero__media" to={`/produto/${gmaDorId}`} aria-label="Ver GMA D'or Chuteira Campo">
             <img src={goldenBoots} alt="GMA D'or Chuteira Campo" />
-          </div>
+          </Link>
 
           <nav className="drawer" aria-label="Ações rápidas">
-            {/* 3 linhas → abre modal de perfil */}
             <Link className="drawer__btn" to="/" aria-label="Home">
               <img src={home} alt="" />
             </Link>
 
-            {/* Ícone de pessoa → verde se logado, abre perfil ou login */}
             <button
               className="drawer__btn"
               type="button"
@@ -419,11 +429,6 @@ export default function Home() {
         </div>
       </section>
 
-
-
-
-
-
       {/* ===== BENEFITS ===== */}
       <section className="benefits">
         <div className="benefits__row">
@@ -449,14 +454,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-
-
-
-
-
-
-
 
       {/* ===== NOVIDADES ===== */}
       <section className="newsHead" id="novidades">
