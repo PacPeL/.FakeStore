@@ -7,6 +7,7 @@ import AuthModal from "../components/AuthModal.jsx";
 import "../styles/catalog.scss";
 import "../styles/auth.scss";
 import "../styles/logo.scss";
+import "../styles/profile.scss"; // ✅ agregado
 
 import home from "../assets/home.svg";
 
@@ -16,6 +17,11 @@ import cartIcon    from "../assets/lineicons_cart-1.svg";
 import searchIcon  from "../assets/icon.svg";
 import vectorArrow from "../assets/Vector.svg";
 import logo  from "../assets/logo.svg";
+
+// ✅ mismos icons que usas en Home/Cart para el perfil
+import check from "../assets/check.svg";
+import truck from "../assets/truck.svg";
+import box from "../assets/box.svg";
 
 export default function Catalog() {
   const [products, setProducts] = useState([]);
@@ -36,6 +42,57 @@ export default function Catalog() {
   const [sortBy, setSortBy]             = useState("Relevância");
   const filterRef                       = useRef(null);
   const sortRef                         = useRef(null);
+
+  // ✅ PERFIL (agregado, igual al Home/Cart)
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [profileView, setProfileView] = useState("profile");
+  const [ordersTab, setOrdersTab]     = useState("confirmed");
+
+  const [profileForm, setProfileForm] = useState({
+    fullName: "",
+    email:    authUser?.email ?? "",
+    phone:    "",
+    cep:      "",
+  });
+
+  useEffect(() => {
+    setProfileForm((prev) => ({ ...prev, email: authUser?.email ?? "" }));
+  }, [authUser]);
+
+  const openOrders = (tab) => { setOrdersTab(tab); setProfileView("orders"); };
+  const closeProfileAll = () => { setProfileOpen(false); setProfileView("profile"); };
+
+  const ordersByTab = {
+    confirmed: [
+      { id: "S1-29384756", title: "Chuteira Campo",    size: "41", qty: 1, img: "" },
+      { id: "S1-11839201", title: "Meião GMA",         size: "U",  qty: 2, img: "" },
+    ],
+    preparing: [
+      { id: "S1-77441122", title: "Luva Goleiro",      size: "M",  qty: 1, img: "" },
+    ],
+    shipping: [
+      { id: "S1-99001122", title: "Calça Térmica GMA", size: "G",  qty: 1, img: "" },
+    ],
+  };
+
+  const ordersTitle =
+    ordersTab === "confirmed" ? "Pedidos Confirmados"
+    : ordersTab === "preparing" ? "Pedidos Preparando"
+    : "Pedidos A caminho";
+
+  const ordersSub =
+    ordersTab === "confirmed" ? "Confira seus pedidos já confirmados pela S1!"
+    : ordersTab === "preparing" ? "Estamos preparando seus pedidos."
+    : "Seus pedidos já estão a caminho!";
+
+  const userName = authUser?.name || authUser?.email?.split("@")?.[0] || "";
+
+  const handleSaveProfile = () => closeProfileAll();
+
+  const handleLogoutFromProfile = async () => {
+    closeProfileAll();
+    await logout();
+  };
 
   const recentTags = [
     "Chuteira", "Tênis", "Bola",
@@ -62,6 +119,7 @@ export default function Catalog() {
       if (e.key === "Escape") {
         setSearchOpen(false); setFilterOpen(false);
         setSortOpen(false); auth.closeAuth();
+        setProfileOpen(false); // ✅ agregado
       }
     };
     window.addEventListener("keydown", handle);
@@ -69,19 +127,22 @@ export default function Catalog() {
   }, [auth]);
 
   useEffect(() => {
-    if (!searchOpen && !filterOpen && !sortOpen && !auth.authOpen) return;
+    if (!searchOpen && !filterOpen && !sortOpen && !auth.authOpen && !profileOpen) return;
     const handle = (e) => {
       if (e.target.closest(".searchHeader")) return;
       if (e.target.closest(".drawer")) return;
       if (e.target.closest(".authModal")) return;
+      if (e.target.closest(".profileModal")) return; // ✅ agregado
+
       if (searchOpen) setSearchOpen(false);
       if (auth.authOpen) auth.closeAuth();
       if (filterOpen && filterRef.current && !filterRef.current.contains(e.target)) setFilterOpen(false);
       if (sortOpen   && sortRef.current   && !sortRef.current.contains(e.target))   setSortOpen(false);
+      if (profileOpen) setProfileOpen(false); // ✅ agregado
     };
     document.addEventListener("click", handle);
     return () => document.removeEventListener("click", handle);
-  }, [searchOpen, filterOpen, sortOpen, auth]);
+  }, [searchOpen, filterOpen, sortOpen, auth, profileOpen]);
 
   useEffect(() => {
     if (searchOpen) setTimeout(() => searchInputRef.current?.focus(), 80);
@@ -92,8 +153,9 @@ export default function Catalog() {
     setSearchOpen(false);
   };
 
+  // ✅ ARREGLO: antes deslogueaba. Ahora abre perfil si está logueado, si no abre login.
   const handleProfileClick = () => {
-    if (isLoggedIn) logout();
+    if (isLoggedIn) setProfileOpen(true);
     else auth.openAuth("login");
   };
 
@@ -118,6 +180,7 @@ export default function Catalog() {
       case "Maior preço": arr.sort((a, b) => b.price - a.price); break;
       case "A-Z": arr.sort((a, b) => a.title.localeCompare(b.title)); break;
       case "Z-A": arr.sort((a, b) => b.title.localeCompare(a.title)); break;
+      default: break;
     }
     return arr;
   }, [filtered, sortBy]);
@@ -169,6 +232,170 @@ export default function Catalog() {
       {/* ===== AUTH MODAL ===== */}
       <AuthModal {...auth} />
 
+      {/* ===== PROFILE MODAL (agregado) ===== */}
+      <div className={`profileOverlay ${profileOpen ? "isOpen" : ""}`} onClick={closeProfileAll}>
+        <div
+          className={`profileModal ${profileOpen ? "isOpen" : ""}`}
+          role="dialog"
+          aria-modal="true"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="profileCard">
+            <div className="profileCard__pad">
+
+              {/* ── VIEW: PROFILE ── */}
+              {profileView === "profile" && (
+                <div className="profileGrid">
+
+                  {/* LEFT */}
+                  <div className="profileLeft">
+                    <div className="profileHello">
+                      <div className="profileHello__text">
+                        Olá, {userName || "[Nome do Usuário]"}.
+                      </div>
+                    </div>
+
+                    <div className="profileFields">
+                      <div className="profileField">
+                        <input className="profileField__input"
+                          value={profileForm.fullName}
+                          onChange={(e) => setProfileForm((p) => ({ ...p, fullName: e.target.value }))}
+                          placeholder="Nome Completo: Ex. Goku Super Saiyajin 2"
+                          aria-label="Nome completo" />
+                      </div>
+                      <div className="profileField">
+                        <input className="profileField__input"
+                          value={profileForm.email}
+                          onChange={(e) => setProfileForm((p) => ({ ...p, email: e.target.value }))}
+                          placeholder="E-mail: gokusupersaiyajin2@gmail.com"
+                          aria-label="E-mail" />
+                      </div>
+                      <div className="profileField">
+                        <input className="profileField__input"
+                          value={profileForm.phone}
+                          onChange={(e) => setProfileForm((p) => ({ ...p, phone: e.target.value }))}
+                          placeholder="Número: Ex.(**) ****-****"
+                          aria-label="Número" />
+                      </div>
+                      <div className="profileField">
+                        <input className="profileField__input"
+                          value={profileForm.cep}
+                          onChange={(e) => setProfileForm((p) => ({ ...p, cep: e.target.value }))}
+                          placeholder="Cep: Ex. *****-***"
+                          aria-label="CEP" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* RIGHT */}
+                  <div className="profileRight">
+                    <div className="profileRight__titleWrap">
+                      <div className="profileRight__title">Minhas Compras</div>
+                    </div>
+                    <div className="profileRight__body">
+                      <div className="profileIconsRow">
+                        <button type="button" className="iconBox iconBox--confirmed iconBoxBtn"
+                          onClick={() => openOrders("confirmed")}>
+                          <img className="iconImg iconImg--confirmed" src={check} alt="Confirmado" />
+                        </button>
+                        <button type="button" className="iconBox iconBox--preparing iconBoxBtn"
+                          onClick={() => openOrders("preparing")}>
+                          <img className="iconImg iconImg--preparing" src={box} alt="Preparando" />
+                        </button>
+                        <button type="button" className="iconBox iconBox--shipping iconBoxBtn"
+                          onClick={() => openOrders("shipping")}>
+                          <img className="iconImg iconImg--shipping" src={truck} alt="A caminho" />
+                        </button>
+                      </div>
+                      <div className="profileLabelsRow">
+                        <div className="profileLabel">Confirmado</div>
+                        <div className="profileLabel">Preparando</div>
+                        <div className="profileLabel">A caminho</div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              )}
+
+              {/* ── VIEW: ORDERS ── */}
+              {profileView === "orders" && (
+                <div className="ordersView">
+                  <div className="ordersHead">
+                    <div className="ordersHead__title">{ordersTitle}</div>
+                    <div className="ordersHead__sub">{ordersSub}</div>
+                  </div>
+                  <div className="ordersList">
+                    {ordersByTab[ordersTab].map((o) => (
+                      <div key={o.id} className="orderItem">
+                        <div className="orderItem__left">
+                          <img className="orderItem__img"
+                            src={o.img || "https://placehold.co/87x87"} alt="" />
+                          <div className="orderItem__mid">
+                            <div className="orderItem__name">{o.title}</div>
+                            <div className="orderItem__meta">
+                              <div className="orderItem__metaText">Tam {o.size}</div>
+                              <div className="orderItem__metaText">Qnt. {o.qty}</div>
+                            </div>
+                          </div>
+                          <div className="orderItem__codeWrap">
+                            <div className="orderItem__code">Código do Pedido: #{o.id}</div>
+                          </div>
+                        </div>
+                        <div className="orderItem__right">
+                          <div className="orderRightIcon">
+                            <div className="orderRightIcon__a" />
+                            <div className="orderRightIcon__b" />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+            </div>
+
+            {/* FOOTER BUTTONS */}
+            <div className="profileActions">
+              {profileView === "profile" ? (
+                <>
+                  {isLoggedIn ? (
+                    <>
+                      <button type="button" className="profileBtn profileBtn--ghost"
+                        onClick={handleLogoutFromProfile}>
+                        Sair
+                      </button>
+                      <button type="button" className="profileBtn profileBtn--solid"
+                        onClick={handleSaveProfile}>
+                        Salvar
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button type="button" className="profileBtn profileBtn--ghost"
+                        onClick={closeProfileAll}>
+                        Cancelar
+                      </button>
+                      <button type="button" className="profileBtn profileBtn--solid"
+                        onClick={() => { closeProfileAll(); auth.openAuth("login"); }}>
+                        Entrar
+                      </button>
+                    </>
+                  )}
+                </>
+              ) : (
+                <button type="button" className="profileBtn profileBtn--solid profileBtn--ok"
+                  onClick={() => setProfileView("profile")}>
+                  Ok
+                </button>
+              )}
+            </div>
+
+          </div>
+        </div>
+      </div>
+
       {/* ===== HERO ===== */}
       <section className="catalogHero">
         <div className="catalogHero__wrap">
@@ -182,8 +409,10 @@ export default function Catalog() {
             <button
               className="drawer__btn"
               type="button"
-              aria-label={isLoggedIn ? "Sair" : "Entrar"}
-              title={isLoggedIn ? `Clique para sair (${authUser?.name ?? authUser?.email ?? ""})` : "Entrar / Cadastrar"}
+              aria-label={isLoggedIn ? `Perfil (${authUser?.name ?? ""})` : "Entrar"}
+              title={isLoggedIn
+                ? `Ver perfil (${authUser?.name ?? authUser?.email ?? ""})`
+                : "Entrar / Cadastrar"}
               onClick={handleProfileClick}
             >
               <img
@@ -316,7 +545,6 @@ export default function Catalog() {
                   <div className="card__name">{p.title}</div>
                   <div className="card__price">R$ {p.price.toFixed(2)}</div>
 
-                  {/* ✅ MISMO BLOQUE DE ESTRELAS AQUI TAMBIÉM */}
                   <div className="card__stars" aria-label={`Avaliação ${p?.rating?.rate ?? 0} de 5`}>
                     {Array.from({ length: 5 }).map((_, i) => {
                       const rate = Number(p?.rating?.rate ?? 0);
