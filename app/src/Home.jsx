@@ -492,6 +492,35 @@ export default function Home() {
         )}
       </section>
 
+
+
+
+
+
+
+
+
+
+
+<div className="pointers">
+    <div style={{flex: '1 1 0', height: 14, position: 'relative', background: '#969696', borderRadius: 100}} />
+    <div style={{flex: '1 1 0', height: 14, position: 'relative', borderRadius: 100, border: '1px #969696 solid'}} />
+    <div style={{flex: '1 1 0', height: 14, position: 'relative', borderRadius: 100, border: '1px #969696 solid'}} />
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
       {/* ===== BANNER ===== */}
       <section className="banner">
         <img src={stadium} alt="Torcida no estádio" />
