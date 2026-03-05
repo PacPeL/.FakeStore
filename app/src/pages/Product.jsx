@@ -674,7 +674,7 @@ useEffect(() => {
                   </div>
                 </div>
 
-                <div className="buyCol buyCol--right">
+                <div className="buyCol buyCol--right" id="right">
                   <div className="buyFields">
                     <input
                       className="buyInput"

@@ -61,7 +61,7 @@
   justify-content: center;
   align-items: stretch;
   margin-left: 0px;
-  padding: 0;
+  margin-top: -10px;
 }
 
 .buyCol {
@@ -569,6 +569,10 @@
 /* Compensa el margen negativo del subtítulo para que el match sea perfecto */
 .buyCol--right .buyFields {
   margin-top: calc(318px - 14px); /* -14px es el margin-top de .buySub */
+}
+
+#right{
+   margin-top: calc(318px - 14px)
 }
 
 /* En responsive (cuando se vuelve columna), NO queremos ese empuje */
