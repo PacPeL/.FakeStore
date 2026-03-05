@@ -41,10 +41,13 @@
 }
 
 .hero__title {
+  width: 1000%;
   margin: 0;
-  font-family: "Michroma", system-ui, -apple-system, Segoe UI, Roboto, Arial;
-  font-size: 40px;
-  font-weight: 400;
+  font-family: "Montserrat";
+  word-wrap: break-word;
+  font-style: italic;
+  font-size: 64px;
+  font-weight: 900;
   color: #000;
   line-height: 1.25;
 }
